@@ -1,0 +1,211 @@
+import { useEffect, useRef } from 'react';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+interface Booking {
+  id: number;
+  status: string;
+  startDate: string;
+  endDate: string;
+}
+
+interface Listing {
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  deposit: number;
+  location: string;
+  imageUrl?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  userId: number;
+  categoryId: number;
+  category: Category;
+  user: {
+    id: number;
+    name: string;
+    email: string;
+  };
+  bookings?: Booking[];
+}
+
+interface BrowseMapProps {
+  listings: Listing[];
+  onListingSelect: (listing: Listing) => void;
+  selectedListing: Listing | null;
+}
+
+export default function BrowseMap({ listings, onListingSelect, selectedListing }: BrowseMapProps) {
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<L.Map | null>(null);
+  const markersRef = useRef<{ [key: number]: L.Marker }>({});
+
+  useEffect(() => {
+    if (!mapContainerRef.current) return;
+
+    // Ініціалізація карти, якщо вона ще не ініціалізована
+    if (!mapRef.current) {
+      // За замовчуванням центруємо на Львів, якщо немає координат
+      const defaultCenter: L.LatLngExpression = [49.8397, 24.0297];
+      
+      mapRef.current = L.map(mapContainerRef.current, {
+        zoomControl: false, // прибираємо стандартний зум, щоб зробити гарний кастомний
+      }).setView(defaultCenter, 13);
+
+      // Додаємо шар карти OpenStreetMap (колірна гама світла, приємна для очей)
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
+      }).addTo(mapRef.current);
+
+      // Додаємо гарні кнопки масштабування у правий нижній кут
+      L.control.zoom({
+        position: 'bottomright'
+      }).addTo(mapRef.current);
+    }
+
+    return () => {
+      // Очищення при розмонтуванні
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
+  }, []);
+
+  // Оновлення маркерів при зміні списку оголошень
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    // Спочатку видаляємо всі старі маркери
+    Object.values(markersRef.current).forEach(marker => marker.remove());
+    markersRef.current = {};
+
+    const listingsWithCoords = listings.filter(
+      item => item.latitude !== undefined && item.latitude !== null &&
+              item.longitude !== undefined && item.longitude !== null
+    );
+
+    if (listingsWithCoords.length === 0) return;
+
+    const bounds: L.LatLngExpression[] = [];
+
+    listingsWithCoords.forEach(listing => {
+      const lat = listing.latitude as number;
+      const lng = listing.longitude as number;
+      bounds.push([lat, lng]);
+
+      const isSelected = selectedListing?.id === listing.id;
+
+      // Перевіряємо, чи є підтверджене бронювання (оренда)
+      const isRented = listing.bookings?.some(b => b.status === 'CONFIRMED') || false;
+
+      // Обрізаємо назву речі, щоб мітка залишалася компактною
+      const displayTitle = listing.title.length > 12 ? listing.title.slice(0, 12) + '...' : listing.title;
+
+      // Створення кастомного маркера-пігулки з назвою, ціною та галочкою, якщо орендовано
+      const priceIcon = L.divIcon({
+        html: `
+          <div class="map-price-marker ${isSelected ? 'selected' : ''} ${isRented ? 'rented' : ''}">
+            ${isRented ? '<span class="marker-checkmark">✓</span> ' : ''}
+            <span class="marker-title-pill">${displayTitle}</span> • ${listing.price} ₴
+          </div>
+        `,
+        className: 'map-price-marker-container',
+        iconSize: [140, 28],
+        iconAnchor: [70, 14],
+        popupAnchor: [0, -14]
+      });
+
+      const marker = L.marker([lat, lng], { icon: priceIcon }).addTo(map);
+
+      // Гарне спливаюче вікно з прев'ю товару/житла та міткою оренди
+      const popupContent = document.createElement('div');
+      popupContent.className = 'map-popup-card';
+      popupContent.innerHTML = `
+        ${listing.imageUrl ? `<img src="${listing.imageUrl}" alt="${listing.title}" class="map-popup-image" />` : `<div class="map-popup-placeholder">Фото відсутнє</div>`}
+        <div class="map-popup-title">${listing.title}</div>
+        <div class="map-popup-category">${listing.category?.name || ''} • ${listing.location}</div>
+        <div class="map-popup-price-row">
+          <span class="map-popup-price">
+            ${listing.price} ₴ <span class="map-popup-price-unit">/ добу</span>
+            ${isRented ? '<span class="map-popup-rented-badge">✓ Орендовано</span>' : ''}
+          </span>
+          <button class="map-popup-btn" id="popup-btn-${listing.id}">Переглянути</button>
+        </div>
+      `;
+
+      marker.bindPopup(popupContent, {
+        maxWidth: 240,
+        className: 'custom-leaflet-popup'
+      });
+
+      // Обробка події кліку на кнопку всередині попупу
+      marker.on('popupopen', () => {
+        const btn = document.getElementById(`popup-btn-${listing.id}`);
+        if (btn) {
+          btn.onclick = (e) => {
+            e.stopPropagation();
+            onListingSelect(listing);
+          };
+        }
+      });
+
+      marker.on('click', () => {
+        // Оновити виділене оголошення
+        onListingSelect(listing);
+      });
+
+      markersRef.current[listing.id] = marker;
+    });
+
+    // Масштабуємо карту, щоб було видно всі маркери
+    if (bounds.length > 0) {
+      map.fitBounds(L.latLngBounds(bounds), {
+        padding: [40, 40],
+        maxZoom: 15
+      });
+    }
+  }, [listings, selectedListing, onListingSelect]);
+
+  // Сфокусувати на маркері, якщо оголошення вибрано ззовні
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !selectedListing) return;
+
+    const lat = selectedListing.latitude;
+    const lng = selectedListing.longitude;
+
+    if (lat !== undefined && lat !== null && lng !== undefined && lng !== null) {
+      map.setView([lat, lng], 15, { animate: true });
+      
+      const marker = markersRef.current[selectedListing.id];
+      if (marker && !marker.isPopupOpen()) {
+        marker.openPopup();
+      }
+    }
+  }, [selectedListing]);
+
+  return (
+    <div 
+      ref={mapContainerRef} 
+      style={{ 
+        width: '100%', 
+        height: '100%', 
+        borderRadius: '16px',
+        overflow: 'hidden',
+        border: '1px solid #e0e0e0',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)'
+      }} 
+    />
+  );
+}

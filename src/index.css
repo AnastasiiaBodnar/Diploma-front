@@ -1,111 +1,230 @@
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  --bg-color: #ffffff;
+  --bg-light: #f7f7f7;
+  --bg-active: #ebebeb;
+  
+  --text-color: #222222;
+  --text-muted: #717171;
+  --text-dark: #000000;
+  
+  --border-color: #dddddd;
+  --border-focus: #222222;
+  
+  --primary-color: #FF385C; /* Фірмовий Airbnb Rose колір */
+  --primary-hover: #e00b34;
+  
+  --error-color: #c13515;
+  --error-bg: #fff0f0;
+  --error-border: #fec7c7;
+  
+  --success-color: #1a7a3e;
+  --success-bg: #eafaf1;
+  --success-border: #c1f3d3;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
+  --pending-color: #8a5e00;
+  --pending-bg: #fff9f0;
+  --pending-border: #ffe3b3;
+  
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.43;
+  color: var(--text-color);
+  background-color: var(--bg-color);
   box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
 }
 
 body {
   margin: 0;
+  padding: 0;
+  background-color: var(--bg-color);
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+#root {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 24px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3, h4 {
+  color: var(--text-color);
+  margin-top: 0;
+  font-weight: 600;
 }
 
 h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
+  font-size: 32px;
+  letter-spacing: -0.6px;
+  margin-bottom: 24px;
 }
+
 h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
+  font-size: 22px;
+  margin-bottom: 16px;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
+a {
+  color: var(--text-color);
+  text-decoration: underline;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  border: 1px solid var(--text-color);
+  padding: 10px 18px;
+  cursor: pointer;
+  border-radius: 8px; /* М'які округлення кутів */
+  transition: background-color 0.15s, border-color 0.15s, transform 0.1s;
+}
+
+button:hover {
+  background-color: var(--bg-light);
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+button.primary {
+  background-color: var(--primary-color);
+  color: #ffffff;
+  border-color: var(--primary-color);
+}
+
+button.primary:hover {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+button.danger {
+  background-color: var(--bg-color);
+  border-color: var(--error-color);
+  color: var(--error-color);
+}
+
+button.danger:hover {
+  background-color: var(--error-bg);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+  font-family: inherit;
+  font-size: 14px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #b0b0b0;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 1px var(--border-focus);
+}
+
+label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-color);
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+/* Оповіщення (Alerts) */
+.alert {
+  padding: 16px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.alert-error {
+  border-color: var(--error-border);
+  background-color: var(--error-bg);
+  color: var(--error-color);
+}
+
+.alert-success {
+  border-color: var(--success-border);
+  background-color: var(--success-bg);
+  color: var(--success-color);
+}
+
+.alert-info {
+  border-color: var(--border-color);
+  background-color: var(--bg-light);
+  color: var(--text-color);
+}
+
+/* Статус-теги */
+.status-tag {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
   border-radius: 4px;
-  color: var(--text-h);
+  border: 1px solid var(--border-color);
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+.status-pending {
+  border-color: var(--pending-border);
+  background-color: var(--pending-bg);
+  color: var(--pending-color);
+}
+
+.status-confirmed {
+  border-color: var(--success-border);
+  background-color: var(--success-bg);
+  color: var(--success-color);
+}
+
+.status-rejected {
+  border-color: var(--error-border);
+  background-color: var(--error-bg);
+  color: var(--error-color);
+}
+
+.status-cancelled {
+  border-color: var(--border-color);
+  background-color: var(--bg-light);
+  color: var(--text-muted);
 }
