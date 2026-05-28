@@ -789,3 +789,465 @@
     display: flex;
   }
 }
+
+/* Airbnb Location Autocomplete Dropdown */
+.autocomplete-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 450px;
+  max-width: 95vw;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--border-color);
+  margin-top: 12px;
+  padding: 8px 0;
+  list-style: none;
+  z-index: 1010;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.autocomplete-dropdown li {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+  font-size: 14px;
+  color: var(--text-color);
+  text-align: left;
+}
+
+.autocomplete-dropdown li:hover {
+  background-color: #f7f7f7;
+}
+
+.suggestion-icon-circle {
+  width: 36px;
+  height: 36px;
+  background-color: #f1f1f1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  flex-shrink: 0;
+  transition: background-color 0.15s;
+}
+
+.autocomplete-dropdown li:hover .suggestion-icon-circle {
+  background-color: #e4e4e4;
+}
+
+.suggestion-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 500;
+  color: #222222;
+}
+
+/* --- Airbnb Style Custom Calendar Picker --- */
+.calendar-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 16px;
+}
+
+.calendar-modal-content {
+  background-color: #ffffff;
+  border-radius: 24px;
+  padding: 32px;
+  width: 100%;
+  max-width: 820px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  color: #222222;
+  font-family: inherit;
+}
+
+.calendar-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.calendar-nights-info h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 6px 0;
+  color: #222222;
+}
+
+.calendar-nights-info p {
+  font-size: 14px;
+  color: #6a6a6a;
+  margin: 0;
+}
+
+.calendar-inputs-box {
+  display: flex;
+  border: 1px solid #b0b0b0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.calendar-input-seg {
+  padding: 8px 16px;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  min-width: 130px;
+}
+
+.calendar-input-seg:first-child {
+  border-right: 1px solid #b0b0b0;
+}
+
+.calendar-input-seg .label {
+  font-size: 9px;
+  font-weight: 800;
+  color: #222222;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.calendar-input-seg .value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #222222;
+}
+
+.calendar-grid-container {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.calendar-month-view {
+  flex: 1;
+  min-width: 280px;
+  max-width: 320px;
+}
+
+.calendar-month-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.calendar-month-name {
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  width: 100%;
+}
+
+.calendar-nav-btn {
+  background: none;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #222222;
+  transition: background-color 0.15s;
+}
+
+.calendar-nav-btn:hover {
+  background-color: #f7f7f7;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.calendar-weekdays span {
+  font-size: 12px;
+  font-weight: 600;
+  color: #717171;
+}
+
+.calendar-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  row-gap: 4px;
+}
+
+.calendar-day-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  border-radius: 50%;
+  transition: background-color 0.1s, color 0.1s;
+}
+
+.calendar-day-cell:hover:not(.disabled):not(.busy) {
+  background-color: #f7f7f7;
+  border: 1px solid #222222;
+}
+
+.calendar-day-cell.disabled {
+  color: #dddddd;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.calendar-day-cell.busy {
+  color: #b0b0b0;
+  text-decoration: line-through;
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.calendar-day-number {
+  position: relative;
+  z-index: 2;
+}
+
+.calendar-day-cell.selected-start,
+.calendar-day-cell.selected-end {
+  background-color: transparent !important;
+  color: #ffffff !important;
+  z-index: 5;
+}
+
+.calendar-day-cell.selected-start::before,
+.calendar-day-cell.selected-end::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #222222;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.calendar-day-cell.in-range {
+  background-color: #f7f7f7;
+  border-radius: 0;
+  color: #222222;
+}
+
+.calendar-day-cell.in-range:hover {
+  background-color: #ebebeb;
+}
+
+.calendar-day-cell.selected-start::after,
+.calendar-day-cell.selected-end::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  background-color: #f7f7f7;
+  z-index: 0;
+}
+
+.calendar-day-cell.selected-start::after {
+  right: 0;
+}
+
+.calendar-day-cell.selected-end::after {
+  left: 0;
+}
+
+/* Для одиночного вибору start == end або при першому кліку прибираємо зсув */
+.calendar-day-cell.single-day::after {
+  display: none;
+}
+
+.calendar-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+  border-top: 1px solid #ebebeb;
+  padding-top: 16px;
+}
+
+.calendar-clear-btn {
+  background: none;
+  border: none;
+  color: #222222;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.calendar-clear-btn:hover {
+  background-color: #f7f7f7;
+}
+
+.calendar-close-btn {
+  background-color: #222222;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.calendar-close-btn:hover {
+  background-color: #000000;
+}
+
+/* Тригер вибору дат (Airbnb Style) */
+.airbnb-date-picker-trigger {
+  display: flex;
+  align-items: center;
+  border: 1px solid #b0b0b0;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+  transition: border-color 0.15s;
+  background-color: #ffffff;
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.airbnb-date-picker-trigger:hover {
+  border-color: #222222;
+}
+
+.airbnb-date-seg {
+  flex: 1;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.airbnb-date-seg .label {
+  font-size: 9px;
+  font-weight: 800;
+  color: #222222;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.airbnb-date-seg .value {
+  font-size: 13px;
+  font-weight: 500;
+  color: #222222;
+}
+
+.airbnb-date-divider {
+  width: 1px;
+  height: 38px;
+  background-color: #b0b0b0;
+  align-self: center;
+}
+
+/* Детальний перегляд речі як повноцінна сторінка (Airbnb Style) */
+.listing-detail-page-container {
+  max-width: 1120px;
+  margin: 0 auto 48px;
+  padding: 0 24px;
+}
+
+.back-link-container {
+  margin-bottom: 20px;
+}
+
+.back-link-btn {
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #222222;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.15s;
+}
+
+.back-link-btn:hover {
+  background-color: #f7f7f7;
+}
+
+.listing-detail-page-content h2 {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #222222;
+}
+
+.listing-detail-page-content .text-muted {
+  font-size: 14px;
+  color: #6a6a6a;
+}
+
+/* Рейтинг на картках оголошень */
+.listing-card-rating {
+  font-size: 14px;
+  font-weight: 600;
+  color: #222222;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.listing-card-rating.new {
+  color: #717171;
+  font-weight: 500;
+}
+
+/* Інтерактивні зірочки відгуків */
+.star-icon {
+  user-select: none;
+}
+.star-icon:hover {
+  transform: scale(1.15);
+}
+.star-icon:active {
+  transform: scale(0.95);
+}
+
+

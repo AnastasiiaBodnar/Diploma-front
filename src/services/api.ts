@@ -106,6 +106,39 @@ export const listingAPI = {
     });
     return handleResponse(res);
   },
+
+  async deleteListing(id: number) {
+    const res = await fetch(`${API_BASE_URL}/listings/${id}`, {
+      method: 'DELETE',
+      headers: getHeaders(),
+    });
+    return handleResponse(res);
+  },
+
+  async getListingById(id: number) {
+    const res = await fetch(`${API_BASE_URL}/listings/${id}`, {
+      method: 'GET',
+      headers: getHeaders(),
+    });
+    return handleResponse(res);
+  },
+
+  async updateListing(id: number, formData: FormData) {
+    const res = await fetch(`${API_BASE_URL}/listings/${id}`, {
+      method: 'PUT',
+      headers: getHeaders(true),
+      body: formData,
+    });
+    return handleResponse(res);
+  },
+
+  async getListingAvailability(id: number) {
+    const res = await fetch(`${API_BASE_URL}/listings/${id}/availability`, {
+      method: 'GET',
+      headers: getHeaders(),
+    });
+    return handleResponse(res);
+  },
 };
 
 export const bookingAPI = {
@@ -134,12 +167,51 @@ export const bookingAPI = {
     return handleResponse(res);
   },
 
-  async updateBookingStatus(id: number, status: 'CONFIRMED' | 'REJECTED' | 'CANCELLED') {
+  async updateBookingStatus(id: number, status: 'CONFIRMED' | 'REJECTED' | 'CANCELLED', reason?: string) {
     const res = await fetch(`${API_BASE_URL}/bookings/${id}/status`, {
       method: 'PATCH',
       headers: getHeaders(),
-      body: JSON.stringify({ status }),
+      body: JSON.stringify({ status, reason }),
     });
     return handleResponse(res);
   },
+};
+
+export const notificationAPI = {
+  async getMyNotifications() {
+    const res = await fetch(`${API_BASE_URL}/notifications`, {
+      method: 'GET',
+      headers: getHeaders(),
+    });
+    return handleResponse(res);
+  },
+
+  async markAsRead(id: number) {
+    const res = await fetch(`${API_BASE_URL}/notifications/${id}/read`, {
+      method: 'PATCH',
+      headers: getHeaders(),
+    });
+    return handleResponse(res);
+  },
+};
+
+export const reviewAPI = {
+  // Написати новий відгук (потребує токена)
+  async createReview(payload: { listingId: number; rating: number; comment: string }) {
+    const res = await fetch(`${API_BASE_URL}/reviews`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(payload),
+    });
+    return handleResponse(res);
+  },
+
+  // Отримати відгуки для конкретної речі (публічний)
+  async getReviewsByListing(listingId: number) {
+    const res = await fetch(`${API_BASE_URL}/reviews/listing/${listingId}`, {
+      method: 'GET',
+      headers: getHeaders(),
+    });
+    return handleResponse(res);
+  }
 };
