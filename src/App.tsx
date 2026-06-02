@@ -279,7 +279,7 @@ function App() {
   const [authMode, setAuthMode] = useState<AuthMode>('login');
   const [isAuthOpen, setIsAuthOpen] = useState<boolean>(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState<boolean>(false);
-  const [isSearchExpanded, setIsSearchExpanded] = useState<boolean>(false);
+
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [firstName, setFirstName] = useState<string>('');
@@ -846,7 +846,7 @@ function App() {
   // Обробка пошуку
   const handleSearchSubmit = (e: FormEvent) => {
     e.preventDefault();
-    setIsSearchExpanded(false);
+
     if (locationQuery.trim()) {
       setShowMap(true);
     } else {
@@ -1298,57 +1298,8 @@ function App() {
           RentLocal
         </div>
         
-        {/* Компактна пошукова панель-пігулка або розгорнута форма */}
+        {/* Пошукова форма */}
         {activeView === 'listings' && !selectedListing && (
-          !isSearchExpanded ? (
-            <div 
-              className="compact-search-pill" 
-              onClick={() => setIsSearchExpanded(true)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                border: '1px solid #dddddd',
-                borderRadius: '24px',
-                padding: '8px 8px 8px 16px',
-                cursor: 'pointer',
-                boxShadow: '0 1px 2px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05)',
-                transition: 'box-shadow 0.2s',
-                backgroundColor: '#ffffff'
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.12)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05)'; }}
-            >
-              <span style={{ fontSize: '13px', fontWeight: 600, color: '#222222', paddingRight: '12px' }}>
-                {locationQuery || 'Будь-де'}
-              </span>
-              <span style={{ color: '#dddddd', fontSize: '13px' }}>|</span>
-              <span style={{ fontSize: '13px', fontWeight: 600, color: '#222222', padding: '0 12px' }}>
-                {selectedCategory ? categories.find(c => c.slug === selectedCategory)?.name : 'Усі категорії'}
-              </span>
-              <span style={{ color: '#dddddd', fontSize: '13px' }}>|</span>
-              <span style={{ fontSize: '13px', fontWeight: 400, color: '#717171', paddingLeft: '12px', paddingRight: '8px' }}>
-                {searchQuery ? `"${searchQuery}"` : 'Пошук речей'}
-              </span>
-              <div 
-                style={{
-                  backgroundColor: '#FF385C',
-                  color: '#ffffff',
-                  borderRadius: '50%',
-                  width: '32px',
-                  height: '32px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="presentation" focusable="false" style={{ display: 'block', fill: 'none', height: '12px', width: '12px', stroke: 'currentColor', strokeWidth: 5, overflow: 'visible' }}>
-                  <g fill="none">
-                    <path d="m13 24c6.0751322 0 11-4.9248678 11-11 0-6.0751322-4.9248678-11-11-11-6.0751322 0-11 4.9248678-11 11 0 6.0751322 4.9248678 11 11 21zm8-3 9 9"></path>
-                  </g>
-                </svg>
-              </div>
-            </div>
-          ) : (
             <form 
               onSubmit={handleSearchSubmit}
               className="filter-section"
@@ -1521,7 +1472,8 @@ function App() {
                   <button 
                     type="submit"
                     style={{
-                      backgroundColor: '#FF385C',
+                      background: '#FF385C',
+                      border: 'none',
                       color: '#ffffff',
                       border: 'none',
                       fontWeight: 700,
@@ -1549,7 +1501,6 @@ function App() {
 
               </div>
             </form>
-          )
         )}
 
         {/* Права частина шапки */}
@@ -1722,22 +1673,7 @@ function App() {
         </div>
       </header>
 
-      {/* Нова випадаюча пошукова панель Airbnb (тільки напівпрозорий задній фон) */}
-      {isSearchExpanded && activeView === 'listings' && !selectedListing && (
-        <div 
-          className="search-overlay-backdrop"
-          onClick={() => setIsSearchExpanded(false)}
-          style={{
-            position: 'fixed',
-            top: '78px', // float below sticky header
-            left: 0,
-            width: '100vw',
-            height: 'calc(100vh - 78px)',
-            backgroundColor: 'rgba(0, 0, 0, 0.45)',
-            zIndex: 1010,
-          }}
-        />
-      )}
+
 
       {/* Стрічка категорій Airbnb */}
       {activeView === 'listings' && !selectedListing && (
