@@ -166,8 +166,9 @@
 
 .filter-segment input:focus,
 .filter-segment select:focus {
-  box-shadow: none;
-  border-color: transparent;
+  box-shadow: none !important;
+  border-color: transparent !important;
+  outline: none !important;
 }
 
 .filter-segment input::placeholder {

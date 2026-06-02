@@ -30,7 +30,8 @@ interface Listing {
   category: Category;
   user: {
     id: number;
-    name: string;
+    firstName: string;
+    lastName: string;
     email: string;
   };
   bookings?: Booking[];
@@ -40,9 +41,10 @@ interface BrowseMapProps {
   listings: Listing[];
   onListingSelect: (listing: Listing) => void;
   selectedListing: Listing | null;
+  mapCenter?: [number, number] | null;
 }
 
-export default function BrowseMap({ listings, onListingSelect, selectedListing }: BrowseMapProps) {
+export default function BrowseMap({ listings, onListingSelect, selectedListing, mapCenter }: BrowseMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<{ [key: number]: L.Marker }>({});
@@ -52,23 +54,23 @@ export default function BrowseMap({ listings, onListingSelect, selectedListing }
 
     // Ініціалізація карти, якщо вона ще не ініціалізована
     if (!mapRef.current) {
-      // За замовчуванням центруємо на Львів, якщо немає координат
-      const defaultCenter: L.LatLngExpression = [49.8397, 24.0297];
+      // За замовчуванням центруємо на Хмельницький, якщо немає координат
+      const defaultCenter: L.LatLngExpression = [49.4230, 26.9871];
       
       mapRef.current = L.map(mapContainerRef.current, {
         zoomControl: false, // прибираємо стандартний зум, щоб зробити гарний кастомний
       }).setView(defaultCenter, 13);
 
-      // Додаємо шар карти OpenStreetMap (колірна гама світла, приємна для очей)
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      // Додаємо шар карти CartoDB Positron (сріблястий преміальний стиль у дусі Airbnb / Google Maps)
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
         subdomains: 'abcd',
         maxZoom: 20
       }).addTo(mapRef.current);
 
-      // Додаємо гарні кнопки масштабування у правий нижній кут
+      // Додаємо гарні кнопки масштабування у правий верхній кут (як на Google Maps / Airbnb)
       L.control.zoom({
-        position: 'bottomright'
+        position: 'topright'
       }).addTo(mapRef.current);
     }
 
@@ -194,6 +196,14 @@ export default function BrowseMap({ listings, onListingSelect, selectedListing }
       }
     }
   }, [selectedListing]);
+
+  // Сфокусувати на вибраному центрі ззовні (наприклад, при виборі автокомпліту)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (map && mapCenter) {
+      map.setView(mapCenter, 12, { animate: true });
+    }
+  }, [mapCenter]);
 
   return (
     <div 

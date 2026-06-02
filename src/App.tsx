@@ -15,7 +15,8 @@ interface Category {
 interface User {
   id: number;
   email: string;
-  name?: string;
+  firstName?: string;
+  lastName?: string;
   createdAt?: string;
 }
 
@@ -34,7 +35,8 @@ interface Listing {
   category: Category;
   user: {
     id: number;
-    name: string;
+    firstName: string;
+    lastName: string;
     email: string;
     ownerAvgRating?: number | null;
     ownerReviewCount?: number;
@@ -54,7 +56,8 @@ interface Booking {
   tenantId: number;
   tenant: {
     id: number;
-    name: string;
+    firstName: string;
+    lastName: string;
     email: string;
   };
   startDate: string;
@@ -184,14 +187,103 @@ const renderHighlightedText = (text: string, highlight: string) => {
   );
 };
 
+function getCategorySvgIcon(slug: string) {
+  const stroke = "currentColor";
+  const fill = "none";
+  const strokeWidth = 2;
+  
+  switch (slug) {
+    case 'tools':
+      return (
+        <svg viewBox="0 0 24 24" width="24" height="24" fill={fill} stroke={stroke} strokeWidth={strokeWidth}>
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 1 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.77 3.77Z" />
+        </svg>
+      );
+    case 'electronics':
+      return (
+        <svg viewBox="0 0 24 24" width="24" height="24" fill={fill} stroke={stroke} strokeWidth={strokeWidth}>
+          <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+          <line x1="12" y1="18" x2="12.01" y2="18" strokeLinecap="round" />
+        </svg>
+      );
+    case 'sport':
+      return (
+        <svg viewBox="0 0 24 24" width="24" height="24" fill={fill} stroke={stroke} strokeWidth={strokeWidth}>
+          <path d="M6.5 18a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM17.5 18a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM12 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM6.5 15.5H12M12 15.5h5.5M12 5.5v10" />
+        </svg>
+      );
+    case 'tourism':
+      return (
+        <svg viewBox="0 0 24 24" width="24" height="24" fill={fill} stroke={stroke} strokeWidth={strokeWidth}>
+          <path d="m19 20-7-14-7 14M12 6v14M5 20h14" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+    case 'transport':
+      return (
+        <svg viewBox="0 0 24 24" width="24" height="24" fill={fill} stroke={stroke} strokeWidth={strokeWidth}>
+          <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 1 13v3c0 .6.4 1 1 1h2" />
+          <circle cx="7" cy="17" r="2" />
+          <circle cx="17" cy="17" r="2" />
+        </svg>
+      );
+    case 'photo-video':
+      return (
+        <svg viewBox="0 0 24 24" width="24" height="24" fill={fill} stroke={stroke} strokeWidth={strokeWidth}>
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+          <circle cx="12" cy="13" r="4" />
+        </svg>
+      );
+    case 'clothing':
+      return (
+        <svg viewBox="0 0 24 24" width="24" height="24" fill={fill} stroke={stroke} strokeWidth={strokeWidth}>
+          <path d="M12 2a2 2 0 0 1 2 2c0 .7-.3 1.3-.8 1.7L22 13.5a1 1 0 0 1-.5 1.5H2.5a1 1 0 0 1-.5-1.5l8.8-7.8c-.5-.4-.8-1-.8-1.7a2 2 0 0 1 2-2Z" />
+        </svg>
+      );
+    case 'home-garden':
+      return (
+        <svg viewBox="0 0 24 24" width="24" height="24" fill={fill} stroke={stroke} strokeWidth={strokeWidth}>
+          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+      );
+    case 'kids':
+      return (
+        <svg viewBox="0 0 24 24" width="24" height="24" fill={fill} stroke={stroke} strokeWidth={strokeWidth}>
+          <path d="M12 22a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM12 6V2M12 2H9M6 12H2M18 12h4" strokeLinecap="round" />
+        </svg>
+      );
+    case 'hobbies':
+      return (
+        <svg viewBox="0 0 24 24" width="24" height="24" fill={fill} stroke={stroke} strokeWidth={strokeWidth}>
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+          <circle cx="9" cy="9" r="1" fill="currentColor" />
+          <circle cx="15" cy="15" r="1" fill="currentColor" />
+          <circle cx="12" cy="12" r="1" fill="currentColor" />
+        </svg>
+      );
+    default:
+      return (
+        <svg viewBox="0 0 24 24" width="24" height="24" fill={fill} stroke={stroke} strokeWidth={strokeWidth}>
+          <polyline points="16.5 9.4 7.55 4.24 3 6.82 12.5 12 21 7 16.5 9.4" />
+          <line x1="12" y1="22" x2="12" y2="12" />
+          <polyline points="12 12.02 3.5 7.1 3.5 16.5 12 22" />
+          <polyline points="20.5 7.15 20.5 16.5 12 22" />
+        </svg>
+      );
+  }
+}
+
 function App() {
   // Користувач та авторизація
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [authMode, setAuthMode] = useState<AuthMode>('login');
   const [isAuthOpen, setIsAuthOpen] = useState<boolean>(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState<boolean>(false);
+  const [isSearchExpanded, setIsSearchExpanded] = useState<boolean>(false);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [name, setName] = useState<string>('');
+  const [firstName, setFirstName] = useState<string>('');
+  const [lastName, setLastName] = useState<string>('');
 
   // Основний контент
   const [listings, setListings] = useState<Listing[]>([]);
@@ -201,7 +293,7 @@ function App() {
   // Фільтрація
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [locationQuery, setLocationQuery] = useState<string>('');
+  const [locationQuery, setLocationQuery] = useState<string>('Хмельницький');
   const [minPriceQuery, setMinPriceQuery] = useState<string>('');
   const [maxPriceQuery, setMaxPriceQuery] = useState<string>('');
 
@@ -241,7 +333,6 @@ function App() {
 
   // Сповіщення (Notification Bell)
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState<boolean>(false);
 
   // Кастомний інтерактивний календар
   const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false);
@@ -257,7 +348,7 @@ function App() {
   const [isMobileMapOpen, setIsMobileMapOpen] = useState<boolean>(false);
 
   // Чи показувати карту на головній сторінці (тільки при фільтрі локації)
-  const [showMap, setShowMap] = useState<boolean>(false);
+  const [showMap, setShowMap] = useState<boolean>(true);
 
   interface LocationSuggestion {
     display_name: string;
@@ -268,7 +359,7 @@ function App() {
   // Стейт-змінні для автозаповнення локацій (як на Airbnb)
   const [locationSuggestions, setLocationSuggestions] = useState<LocationSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
-  const [mapCenter, setMapCenter] = useState<[number, number] | null>(null);
+  const [mapCenter, setMapCenter] = useState<[number, number] | null>([49.4229, 26.9871]);
 
   // Кабінети
   const [myRentals, setMyRentals] = useState<Booking[]>([]);
@@ -418,6 +509,18 @@ function App() {
     return () => clearTimeout(delayDebounceFn);
   }, [locationQuery]);
 
+  // Закриття підказок при кліку поза полем локації
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.filter-segment')) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('click', handleOutsideClick);
+    return () => document.removeEventListener('click', handleOutsideClick);
+  }, []);
+
   // Завантаження профілю користувача
   const loadUserProfile = async () => {
     try {
@@ -441,6 +544,7 @@ function App() {
   };
 
   // Позначення сповіщення як прочитаного
+  /*
   const handleMarkAsRead = async (id: number) => {
     try {
       await notificationAPI.markAsRead(id);
@@ -449,6 +553,7 @@ function App() {
       console.error('Помилка позначення сповіщення як прочитаного:', err.message);
     }
   };
+  */
 
   // Завантаження зайнятих дат речі
   const loadListingAvailability = async (listingId: number) => {
@@ -741,6 +846,7 @@ function App() {
   // Обробка пошуку
   const handleSearchSubmit = (e: FormEvent) => {
     e.preventDefault();
+    setIsSearchExpanded(false);
     if (locationQuery.trim()) {
       setShowMap(true);
     } else {
@@ -777,7 +883,7 @@ function App() {
     setErrorMsg(null);
     try {
       if (authMode === 'register') {
-        const data = await authAPI.register({ email, password, name });
+        const data = await authAPI.register({ email, password, firstName, lastName });
         localStorage.setItem('rentlocal_token', data.token);
         setCurrentUser(data.user);
         setSuccessMsg('Реєстрація успішна!');
@@ -790,13 +896,54 @@ function App() {
       setIsAuthOpen(false);
       setEmail('');
       setPassword('');
-      setName('');
+      setFirstName('');
+      setLastName('');
     } catch (err: any) {
       setErrorMsg(err.message || 'Помилка авторизації');
     } finally {
       setLoading(false);
     }
   };
+
+  // Вхід через Google
+  const handleGoogleCredentialResponse = async (response: any) => {
+    setLoading(true);
+    setErrorMsg(null);
+    try {
+      const data = await authAPI.googleLogin(response.credential);
+      localStorage.setItem('rentlocal_token', data.token);
+      setCurrentUser(data.user);
+      setSuccessMsg('Вхід через Google успішний!');
+      setIsAuthOpen(false);
+      setEmail('');
+      setPassword('');
+      setFirstName('');
+      setLastName('');
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Помилка Google авторизації');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Ініціалізація кнопки Google Login
+  useEffect(() => {
+    if (isAuthOpen && (window as any).google) {
+      (window as any).google.accounts.id.initialize({
+        client_id: '1050001244321-9n1id40e9uafiie3p1jqtgqhom60idjd.apps.googleusercontent.com',
+        callback: handleGoogleCredentialResponse,
+      });
+      setTimeout(() => {
+        const btnContainer = document.getElementById('google-login-btn');
+        if (btnContainer && (window as any).google) {
+          (window as any).google.accounts.id.renderButton(
+            btnContainer,
+            { theme: 'outline', size: 'large', width: '360' }
+          );
+        }
+      }, 50);
+    }
+  }, [isAuthOpen, authMode]);
 
   // Вихід з акаунту
   const handleLogout = () => {
@@ -1123,168 +1270,553 @@ function App() {
 
   return (
     <div id="root">
-      {/* Шапка сайту */}
-      <header className="app-header">
-        <div className="app-logo" onClick={() => setActiveView('listings')}>
+      {/* Шапка сайту в стилі Airbnb */}
+      <header className="app-header" style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '16px 24px',
+        borderBottom: '1px solid #ebebeb',
+        position: 'sticky',
+        top: 0,
+        backgroundColor: '#ffffff',
+        zIndex: 1020,
+      }}>
+        {/* Логотип */}
+        <div 
+          className="app-logo" 
+          onClick={() => { setActiveView('listings'); setSelectedListing(null); }}
+          style={{
+            fontSize: '24px',
+            fontWeight: 800,
+            color: '#FF385C',
+            cursor: 'pointer',
+            letterSpacing: '-0.8px',
+            userSelect: 'none'
+          }}
+        >
           RentLocal
         </div>
         
-        <nav className="app-nav">
-          <button 
-            className={`nav-tab ${activeView === 'listings' ? 'active' : ''}`}
-            onClick={() => setActiveView('listings')}
-          >
-            Усі оголошення
-          </button>
-          
-          {currentUser && (
-            <>
-              <button 
-                className={`nav-tab ${activeView === 'create' ? 'active' : ''}`}
-                onClick={() => setActiveView('create')}
-              >
-                Додати оголошення
-              </button>
-              <button 
-                className={`nav-tab ${activeView === 'mylistings' ? 'active' : ''}`}
-                onClick={() => setActiveView('mylistings')}
-              >
-                Мої оголошення
-              </button>
-              <button 
-                className={`nav-tab ${activeView === 'rentals' ? 'active' : ''}`}
-                onClick={() => setActiveView('rentals')}
-              >
-                Мої оренди
-              </button>
-              <button 
-                className={`nav-tab ${activeView === 'requests' ? 'active' : ''}`}
-                onClick={() => setActiveView('requests')}
-              >
-                Запити мені
-              </button>
-            </>
-          )}
-        </nav>
-
-        <div className="user-badge" style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '15px' }}>
-          {currentUser ? (
-            <>
-              {/* Дзвіночок сповіщень */}
+        {/* Компактна пошукова панель-пігулка або розгорнута форма */}
+        {activeView === 'listings' && !selectedListing && (
+          !isSearchExpanded ? (
+            <div 
+              className="compact-search-pill" 
+              onClick={() => setIsSearchExpanded(true)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                border: '1px solid #dddddd',
+                borderRadius: '24px',
+                padding: '8px 8px 8px 16px',
+                cursor: 'pointer',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05)',
+                transition: 'box-shadow 0.2s',
+                backgroundColor: '#ffffff'
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.12)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05)'; }}
+            >
+              <span style={{ fontSize: '13px', fontWeight: 600, color: '#222222', paddingRight: '12px' }}>
+                {locationQuery || 'Будь-де'}
+              </span>
+              <span style={{ color: '#dddddd', fontSize: '13px' }}>|</span>
+              <span style={{ fontSize: '13px', fontWeight: 600, color: '#222222', padding: '0 12px' }}>
+                {selectedCategory ? categories.find(c => c.slug === selectedCategory)?.name : 'Усі категорії'}
+              </span>
+              <span style={{ color: '#dddddd', fontSize: '13px' }}>|</span>
+              <span style={{ fontSize: '13px', fontWeight: 400, color: '#717171', paddingLeft: '12px', paddingRight: '8px' }}>
+                {searchQuery ? `"${searchQuery}"` : 'Пошук речей'}
+              </span>
               <div 
-                className="notification-bell-container" 
-                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-                style={{ cursor: 'pointer', position: 'relative', display: 'flex', padding: '6px', borderRadius: '50%', backgroundColor: '#f5f5f7' }}
+                style={{
+                  backgroundColor: '#FF385C',
+                  color: '#ffffff',
+                  borderRadius: '50%',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
               >
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#222" strokeWidth="2" style={{ transition: 'transform 0.2s' }}>
-                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" strokeLinecap="round" strokeLinejoin="round"/>
+                <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="presentation" focusable="false" style={{ display: 'block', fill: 'none', height: '12px', width: '12px', stroke: 'currentColor', strokeWidth: 5, overflow: 'visible' }}>
+                  <g fill="none">
+                    <path d="m13 24c6.0751322 0 11-4.9248678 11-11 0-6.0751322-4.9248678-11-11-11-6.0751322 0-11 4.9248678-11 11 0 6.0751322 4.9248678 11 11 21zm8-3 9 9"></path>
+                  </g>
                 </svg>
-                {notifications.filter(n => !n.isRead).length > 0 && (
-                  <span className="bell-badge" style={{
-                    position: 'absolute',
-                    top: '-3px',
-                    right: '-3px',
-                    backgroundColor: '#ff4d4f',
-                    color: 'white',
-                    borderRadius: '50%',
-                    width: '16px',
-                    height: '16px',
-                    fontSize: '10px',
-                    fontWeight: 'bold',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    {notifications.filter(n => !n.isRead).length}
-                  </span>
+              </div>
+            </div>
+          ) : (
+            <form 
+              onSubmit={handleSearchSubmit}
+              className="filter-section"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                border: '1px solid #dddddd',
+                borderRadius: '32px',
+                padding: '4px 4px 4px 24px',
+                backgroundColor: '#ffffff',
+                boxShadow: '0 3px 12px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0,0,0,0.05)',
+                width: '100%',
+                maxWidth: '850px',
+                margin: 0,
+                boxSizing: 'border-box',
+                position: 'relative',
+                zIndex: 1030
+              }}
+            >
+              <div className="filter-grid" style={{ display: 'flex', alignItems: 'center', width: '100%', flexWrap: 'nowrap' }}>
+                
+                {/* Локація */}
+                <div className="filter-segment" style={{ flex: 1.5, minWidth: '120px', borderRight: '1px solid #ebebeb', paddingRight: '12px', marginRight: '8px', position: 'relative' }}>
+                  <label style={{ display: 'block', fontSize: '9px', fontWeight: 800, color: '#222222', textTransform: 'uppercase', marginBottom: '2px', letterSpacing: '0.8px' }}>
+                    Де орендувати
+                  </label>
+                  <input 
+                    type="text"
+                    placeholder="Пошук місць"
+                    value={locationQuery}
+                    onChange={(e) => {
+                      setLocationQuery(e.target.value);
+                      setShowSuggestions(true);
+                    }}
+                    onFocus={() => setShowSuggestions(true)}
+                    style={{ border: 'none', padding: '4px 0', fontSize: '13px', fontWeight: 500, background: 'transparent', color: '#222222', width: '100%', outline: 'none' }}
+                  />
+                  
+                  {/* Підказки автокомпліту */}
+                  {showSuggestions && locationSuggestions.length > 0 && (
+                    <ul 
+                      className="autocomplete-dropdown"
+                      style={{
+                        position: 'absolute',
+                        top: '100%',
+                        left: '-24px',
+                        minWidth: '350px',
+                        backgroundColor: '#ffffff',
+                        borderRadius: '16px',
+                        boxShadow: '0 8px 28px rgba(0, 0, 0, 0.15)',
+                        border: '1px solid #dddddd',
+                        marginTop: '12px',
+                        padding: '8px 0',
+                        listStyle: 'none',
+                        zIndex: 1030,
+                        maxHeight: '260px',
+                        overflowY: 'auto'
+                      }}
+                    >
+                      {locationSuggestions.map((sug, idx) => (
+                        <li 
+                          key={idx}
+                          onClick={() => {
+                            setLocationQuery(sug.display_name);
+                            setMapCenter([sug.lat, sug.lng]);
+                            setShowSuggestions(false);
+                          }}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            padding: '8px 16px',
+                            cursor: 'pointer',
+                            transition: 'background-color 0.15s',
+                            fontSize: '14px',
+                            color: '#222222'
+                          }}
+                        >
+                          <div className="suggestion-icon-circle" style={{ width: '30px', height: '30px', backgroundColor: '#f1f1f1', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '12px', flexShrink: 0 }}>
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z" />
+                              <circle cx="12" cy="10" r="3" />
+                            </svg>
+                          </div>
+                          <span className="suggestion-text" style={{ fontSize: '13px', fontWeight: 500 }}>
+                            {renderHighlightedText(sug.display_name, locationQuery)}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                {/* Категорія */}
+                <div className="filter-segment" style={{ flex: 1.2, minWidth: '100px', borderRight: '1px solid #ebebeb', paddingRight: '12px', marginRight: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '9px', fontWeight: 800, color: '#222222', textTransform: 'uppercase', marginBottom: '2px', letterSpacing: '0.8px' }}>
+                    Категорія
+                  </label>
+                  <select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    style={{ border: 'none', padding: '4px 0', fontSize: '13px', fontWeight: 500, background: 'transparent', color: '#222222', width: '100%', outline: 'none', cursor: 'pointer' }}
+                  >
+                    <option value="">Усі категорії</option>
+                    {categories.map(c => (
+                      <option key={c.id} value={c.slug}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Ціна від і до */}
+                <div className="filter-segment" style={{ flex: 1.5, minWidth: '120px', borderRight: '1px solid #ebebeb', paddingRight: '12px', marginRight: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '9px', fontWeight: 800, color: '#222222', textTransform: 'uppercase', marginBottom: '2px', letterSpacing: '0.8px' }}>
+                    Ціна (грн)
+                  </label>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <input 
+                      type="number"
+                      placeholder="від"
+                      value={minPriceQuery}
+                      onChange={(e) => setMinPriceQuery(e.target.value)}
+                      style={{ border: 'none', padding: '4px 0', fontSize: '13px', fontWeight: 500, background: 'transparent', color: '#222222', width: '45%', outline: 'none' }}
+                    />
+                    <span style={{ color: '#ebebeb', fontSize: '12px' }}>|</span>
+                    <input 
+                      type="number"
+                      placeholder="до"
+                      value={maxPriceQuery}
+                      onChange={(e) => setMaxPriceQuery(e.target.value)}
+                      style={{ border: 'none', padding: '4px 0', fontSize: '13px', fontWeight: 500, background: 'transparent', color: '#222222', width: '45%', outline: 'none' }}
+                    />
+                  </div>
+                </div>
+
+                {/* Що шукаєте (Опис/назва) */}
+                <div className="filter-segment" style={{ flex: 1.5, minWidth: '120px', marginRight: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '9px', fontWeight: 800, color: '#222222', textTransform: 'uppercase', marginBottom: '2px', letterSpacing: '0.8px' }}>
+                    Опис або назва
+                  </label>
+                  <input 
+                    type="text"
+                    placeholder="Пошук речей"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{ border: 'none', padding: '4px 0', fontSize: '13px', fontWeight: 500, background: 'transparent', color: '#222222', width: '100%', outline: 'none' }}
+                  />
+                </div>
+
+                {/* Кнопки дії */}
+                <div className="filter-actions" style={{ display: 'flex', alignItems: 'center', gap: '6px', paddingLeft: '8px' }}>
+                  <button 
+                    type="button"
+                    onClick={handleClearFilters}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#717171',
+                      fontWeight: 600,
+                      fontSize: '13px',
+                      padding: '10px 16px',
+                      borderRadius: '24px',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f7f7f7'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                  >
+                    Очистити
+                  </button>
+                  <button 
+                    type="submit"
+                    style={{
+                      backgroundColor: '#FF385C',
+                      color: '#ffffff',
+                      border: 'none',
+                      fontWeight: 700,
+                      fontSize: '14px',
+                      padding: '10px 20px',
+                      borderRadius: '24px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      whiteSpace: 'nowrap',
+                      boxShadow: '0 1px 2px rgba(0,0,0,0.08)'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#E61E4D'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FF385C'}
+                  >
+                    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="presentation" focusable="false" style={{ display: 'block', fill: 'none', height: '14px', width: '14px', stroke: 'currentColor', strokeWidth: 4, overflow: 'visible' }}>
+                      <g fill="none">
+                        <path d="m13 24c6.0751322 0 11-4.9248678 11-11 0-6.0751322-4.9248678-11-11-11-6.0751322 0-11 4.9248678-11 11 0 6.0751322 4.9248678 11 11 21zm8-3 9 9"></path>
+                      </g>
+                    </svg>
+                    Шукати
+                  </button>
+                </div>
+
+              </div>
+            </form>
+          )
+        )}
+
+        {/* Права частина шапки */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {currentUser && (
+            <button 
+              onClick={() => setActiveView('create')}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: '10px 16px',
+                borderRadius: '20px',
+                fontSize: '13px',
+                fontWeight: 600,
+                color: '#222222',
+                cursor: 'pointer',
+                transition: 'background-color 0.2s'
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f7f7f7'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+            >
+              Здати річ в оренду
+            </button>
+          )}
+
+          {/* Контейнер випадаючого меню профілю */}
+          <div className="profile-menu-container" style={{ position: 'relative' }}>
+            <button 
+              onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                border: '1px solid #dddddd',
+                borderRadius: '24px',
+                padding: '5px 5px 5px 12px',
+                backgroundColor: '#ffffff',
+                cursor: 'pointer',
+                boxShadow: 'none',
+                transition: 'box-shadow 0.2s'
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
+            >
+              <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="presentation" focusable="false" style={{ display: 'block', fill: 'none', height: '16px', width: '16px', stroke: '#222222', strokeWidth: 3, overflow: 'visible' }}>
+                <g fill="none">
+                  <path d="m2 16h28m-28-10h28m-28 20h28"></path>
+                </g>
+              </svg>
+              
+              <div 
+                className="avatar-placeholder" 
+                style={{
+                  width: '30px',
+                  height: '30px',
+                  borderRadius: '50%',
+                  backgroundColor: '#717171',
+                  color: '#ffffff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  overflow: 'hidden'
+                }}
+              >
+                {currentUser?.firstName ? currentUser.firstName.charAt(0).toUpperCase() : (
+                  <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="presentation" focusable="false" style={{ display: 'block', fill: '#ffffff', height: '100%', width: '100%', overflow: 'visible' }}>
+                    <path d="m16 .7c-8.437 0-15.3 6.863-15.3 15.3s6.863 15.3 15.3 15.3 15.3-6.863 15.3-15.3-6.863-15.3-15.3-15.3zm0 29c-3.541 0-6.757-1.393-9.155-3.66 1.488-3.045 4.542-5.14 8.08-5.14h2.15c3.538 0 6.592 2.095 8.08 5.14-2.398 2.267-5.614 3.66-9.155 3.66zm0-10.7h-2.15c-4.492 0-8.243 3.161-9.176 7.394-2.583-2.617-4.174-6.233-4.174-10.194 0-7.885 6.415-14.3 14.3-14.3s14.3 6.415 14.3 14.3c0 3.961-1.591 7.577-4.174 10.194-.933-4.233-4.684-7.394-9.176-7.394zm5.55-5.8c0-3.061-2.489-5.55-5.55-5.55s-5.55 2.489-5.55 5.55 2.489 5.55 5.55 5.55 5.55-2.489 5.55-5.55z"></path>
+                  </svg>
                 )}
               </div>
+              
+              {notifications.filter(n => !n.isRead).length > 0 && (
+                <span style={{
+                  position: 'absolute',
+                  top: '1px',
+                  right: '1px',
+                  width: '8px',
+                  height: '8px',
+                  backgroundColor: '#FF385C',
+                  borderRadius: '50%',
+                  border: '1px solid #ffffff'
+                }}></span>
+              )}
+            </button>
 
-              {/* Випадаюче вікно сповіщень */}
-              {isNotificationsOpen && (
-                <div className="notifications-dropdown" style={{
+            {/* Випадаюче вікно меню користувача */}
+            {isProfileMenuOpen && (
+              <div 
+                className="profile-dropdown" 
+                onClick={() => setIsProfileMenuOpen(false)}
+                style={{
                   position: 'absolute',
                   top: '45px',
                   right: '0',
-                  backgroundColor: 'white',
-                  border: '1px solid #e0e0e0',
+                  backgroundColor: '#ffffff',
+                  border: 'none',
                   borderRadius: '12px',
-                  width: '320px',
-                  maxHeight: '400px',
-                  overflowY: 'auto',
-                  boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+                  width: '240px',
+                  boxShadow: '0 2px 16px rgba(0,0,0,0.15)',
                   zIndex: 1000,
-                  color: '#222',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  padding: '8px 0',
                   textAlign: 'left'
-                }}>
-                  <div style={{ padding: '12px', borderBottom: '1px solid #eee', fontWeight: 'bold', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span>Сповіщення</span>
-                    <button 
-                      onClick={() => setIsNotificationsOpen(false)}
-                      style={{ background: 'none', border: 'none', color: '#666', fontSize: '12px', cursor: 'pointer', padding: 0 }}
-                    >
-                      Закрити
-                    </button>
-                  </div>
-                  {notifications.length === 0 ? (
-                    <div style={{ padding: '20px', textAlign: 'center', color: '#888' }}>
-                      Немає нових сповіщень
+                }}
+              >
+                {currentUser ? (
+                  <>
+                    <div style={{ padding: '8px 16px', fontSize: '13px', fontWeight: 700, color: '#222222', borderBottom: '1px solid #f0f0f0', marginBottom: '4px' }}>
+                      Вітаємо, {currentUser.firstName}!
                     </div>
-                  ) : (
-                    notifications.map(n => (
-                      <div 
-                        key={n.id} 
-                        style={{
-                          padding: '12px',
-                          borderBottom: '1px solid #f5f5f5',
-                          backgroundColor: n.isRead ? 'transparent' : '#f9f9f9',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: '6px',
-                          position: 'relative'
-                        }}
-                      >
-                        <div style={{ fontSize: '13px', lineHeight: '1.4', paddingRight: '20px', color: '#333' }}>
-                          {n.message}
-                        </div>
-                        <div style={{ fontSize: '10px', color: '#999', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span>{new Date(n.createdAt).toLocaleString('uk-UA')}</span>
-                          {!n.isRead && (
-                            <button 
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleMarkAsRead(n.id);
-                              }}
-                              style={{
-                                background: '#e6f7ff',
-                                color: '#1890ff',
-                                border: 'none',
-                                borderRadius: '4px',
-                                padding: '2px 6px',
-                                fontSize: '10px',
-                                cursor: 'pointer'
-                              }}
-                            >
-                              Читати
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              )}
-
-              <span>Користувач: {currentUser.name || currentUser.email}</span>
-              <button onClick={handleLogout}>Вийти</button>
-            </>
-          ) : (
-            <button className="primary" onClick={() => { setAuthMode('login'); setIsAuthOpen(true); }}>
-              Вхід / Реєстрація
-            </button>
-          )}
+                    <button 
+                      onClick={() => { setActiveView('mylistings'); }}
+                      style={{ background: 'none', border: 'none', padding: '10px 16px', fontSize: '13px', textAlign: 'left', width: '100%', cursor: 'pointer', fontWeight: 500 }}
+                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f7f7f7'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                    >
+                      Мої оголошення
+                    </button>
+                    <button 
+                      onClick={() => { setActiveView('rentals'); }}
+                      style={{ background: 'none', border: 'none', padding: '10px 16px', fontSize: '13px', textAlign: 'left', width: '100%', cursor: 'pointer', fontWeight: 500 }}
+                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f7f7f7'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                    >
+                      Мої оренди
+                    </button>
+                    <button 
+                      onClick={() => { setActiveView('requests'); }}
+                      style={{ background: 'none', border: 'none', padding: '10px 16px', fontSize: '13px', textAlign: 'left', width: '100%', cursor: 'pointer', fontWeight: 500 }}
+                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f7f7f7'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                    >
+                      Запити на оренду
+                    </button>
+                    <button 
+                      onClick={handleLogout}
+                      style={{ background: 'none', border: 'none', padding: '10px 16px', fontSize: '13px', textAlign: 'left', width: '100%', cursor: 'pointer', fontWeight: 500, color: '#FF385C', borderTop: '1px solid #f0f0f0', marginTop: '4px' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f7f7f7'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                    >
+                      Вийти
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button 
+                      onClick={() => { setAuthMode('login'); setIsAuthOpen(true); }}
+                      style={{ background: 'none', border: 'none', padding: '10px 16px', fontSize: '13px', textAlign: 'left', width: '100%', cursor: 'pointer', fontWeight: 600 }}
+                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f7f7f7'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                    >
+                      Увійти
+                    </button>
+                    <button 
+                      onClick={() => { setAuthMode('register'); setIsAuthOpen(true); }}
+                      style={{ background: 'none', border: 'none', padding: '10px 16px', fontSize: '13px', textAlign: 'left', width: '100%', cursor: 'pointer', fontWeight: 500 }}
+                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f7f7f7'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                    >
+                      Зареєструватися
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </header>
+
+      {/* Нова випадаюча пошукова панель Airbnb (тільки напівпрозорий задній фон) */}
+      {isSearchExpanded && activeView === 'listings' && !selectedListing && (
+        <div 
+          className="search-overlay-backdrop"
+          onClick={() => setIsSearchExpanded(false)}
+          style={{
+            position: 'fixed',
+            top: '78px', // float below sticky header
+            left: 0,
+            width: '100vw',
+            height: 'calc(100vh - 78px)',
+            backgroundColor: 'rgba(0, 0, 0, 0.45)',
+            zIndex: 1010,
+          }}
+        />
+      )}
+
+      {/* Стрічка категорій Airbnb */}
+      {activeView === 'listings' && !selectedListing && (
+        <div 
+          className="categories-bar" 
+          style={{
+            display: 'flex',
+            gap: '24px',
+            padding: '12px 24px 8px',
+            borderBottom: '1px solid #ebebeb',
+            overflowX: 'auto',
+            backgroundColor: '#ffffff',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            marginBottom: '24px'
+          }}
+        >
+          {/* Категорія "Усі" */}
+          <button 
+            onClick={() => setSelectedCategory('')}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '6px',
+              background: 'none',
+              border: 'none',
+              padding: '4px 0 10px',
+              cursor: 'pointer',
+              color: selectedCategory === '' ? '#FF385C' : '#717171',
+              borderBottom: selectedCategory === '' ? '2px solid #FF385C' : '2px solid transparent',
+              minWidth: '64px',
+              transition: 'color 0.2s, border-bottom-color 0.2s',
+              borderRadius: 0
+            }}
+          >
+            <div className="category-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <rect x="14" y="14" width="7" height="7" rx="1" />
+              </svg>
+            </div>
+            <span style={{ fontSize: '12px', fontWeight: 600, whiteSpace: 'nowrap' }}>Усі речі</span>
+          </button>
+
+          {categories.map(c => {
+            const isSelected = selectedCategory === c.slug;
+            return (
+              <button 
+                key={c.id}
+                onClick={() => setSelectedCategory(c.slug)}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '6px',
+                  background: 'none',
+                  border: 'none',
+                  padding: '4px 0 10px',
+                  cursor: 'pointer',
+                  color: isSelected ? '#FF385C' : '#717171',
+                  borderBottom: isSelected ? '2px solid #FF385C' : '2px solid transparent',
+                  minWidth: '64px',
+                  transition: 'color 0.2s, border-bottom-color 0.2s',
+                  borderRadius: 0
+                }}
+              >
+                <div className="category-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {getCategorySvgIcon(c.slug)}
+                </div>
+                <span style={{ fontSize: '12px', fontWeight: 600, whiteSpace: 'nowrap' }}>{c.name}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
 
       {/* Системні сповіщення */}
       {errorMsg && <div className="alert alert-error">{errorMsg}</div>}
@@ -1296,125 +1828,7 @@ function App() {
           {/* Вкладка: Усі оголошення (Головна) */}
           {activeView === 'listings' && (
         <div>
-          {/* Пошук та фільтри у стилі Airbnb */}
-          <section className="filter-section">
-            <form onSubmit={handleSearchSubmit} className="filter-grid">
-              <div className="filter-segment">
-                <label htmlFor="search-input">Що шукаєте?</label>
-                <input 
-                  type="text" 
-                  id="search-input"
-                  placeholder="Опис або назва..." 
-                  value={searchQuery}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-                />
-              </div>
 
-              <div className="filter-segment">
-                <label htmlFor="category-select">Категорія</label>
-                <select 
-                  id="category-select"
-                  value={selectedCategory} 
-                  onChange={(e: ChangeEvent<HTMLSelectElement>) => setSelectedCategory(e.target.value)}
-                >
-                  <option value="">Усі категорії</option>
-                  {categories.map(c => (
-                    <option key={c.id} value={c.slug}>{c.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="filter-segment" style={{ position: 'relative' }}>
-                <label htmlFor="location-input">Де?</label>
-                <input 
-                  type="text" 
-                  id="location-input"
-                  placeholder="Місто або район..." 
-                  value={locationQuery}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    setLocationQuery(e.target.value);
-                    setShowSuggestions(true);
-                  }}
-                  onFocus={() => setShowSuggestions(true)}
-                  onBlur={() => {
-                    // Тайм-аут, щоб встиг спрацювати onMouseDown на пропозиції
-                    setTimeout(() => setShowSuggestions(false), 200);
-                  }}
-                  autoComplete="off"
-                />
-
-                 {showSuggestions && locationSuggestions.length > 0 && (
-                  <ul className="autocomplete-dropdown">
-                    {locationSuggestions.map((suggestion, index) => (
-                      <li 
-                        key={index}
-                        onMouseDown={() => {
-                          const cityName = suggestion.display_name.split(',')[0].trim();
-                          setLocationQuery(cityName);
-                          setMapCenter([suggestion.lat, suggestion.lng]);
-                          setShowSuggestions(false);
-                          setShowMap(true);
-                          
-                          // Миттєво підвантажуємо оголошення для обраного міста!
-                          setLoading(true);
-                          listingAPI.getListings({
-                            search: searchQuery,
-                            category: selectedCategory,
-                            location: cityName,
-                            minPrice: minPriceQuery,
-                            maxPrice: maxPriceQuery
-                          }).then(items => {
-                            setListings(items);
-                            setLoading(false);
-                          }).catch(err => {
-                            setErrorMsg(err.message || 'Помилка завантаження оголошень');
-                            setLoading(false);
-                          });
-                        }}
-                      >
-                        <div className="suggestion-icon-circle">
-                          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#222222" strokeWidth="2.5">
-                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                        </div>
-                        <span className="suggestion-text">
-                          {renderHighlightedText(suggestion.display_name, locationQuery)}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-
-              <div className="filter-segment">
-                <label>Бюджет (грн / добу)</label>
-                <div style={{ display: 'flex', gap: '5px' }}>
-                  <input 
-                    type="number" 
-                    placeholder="Від" 
-                    value={minPriceQuery}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => setMinPriceQuery(e.target.value)}
-                    style={{ padding: '4px 0', border: 'none' }}
-                  />
-                  <span style={{ color: '#ccc', alignSelf: 'center' }}>|</span>
-                  <input 
-                    type="number" 
-                    placeholder="До" 
-                    value={maxPriceQuery}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => setMaxPriceQuery(e.target.value)}
-                    style={{ padding: '4px 0', border: 'none' }}
-                  />
-                </div>
-              </div>
-
-              <div className="filter-actions">
-                <button type="submit" className="search-pill-btn">Шукати</button>
-                {(searchQuery || selectedCategory || locationQuery || minPriceQuery || maxPriceQuery) && (
-                  <button type="button" className="clear-pill-btn" onClick={handleClearFilters}>Очистити</button>
-                )}
-              </div>
-            </form>
-          </section>
 
           {/* Список оголошень (Повноширокий за замовчуванням, або Спліт з Картою, якщо вибрано локацію) */}
           {!showMap ? (
@@ -1511,9 +1925,26 @@ function App() {
                 onClick={() => setIsMobileMapOpen(!isMobileMapOpen)}
               >
                 {isMobileMapOpen ? (
-                  <>Список 📋</>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <line x1="8" y1="6" x2="21" y2="6" />
+                      <line x1="8" y1="12" x2="21" y2="12" />
+                      <line x1="8" y1="18" x2="21" y2="18" />
+                      <line x1="3" y1="6" x2="3.01" y2="6" strokeLinecap="round" strokeLinejoin="round" />
+                      <line x1="3" y1="12" x2="3.01" y2="12" strokeLinecap="round" strokeLinejoin="round" />
+                      <line x1="3" y1="18" x2="3.01" y2="18" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    Список
+                  </span>
                 ) : (
-                  <>Карта 🗺️</>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+                      <line x1="9" y1="3" x2="9" y2="18" />
+                      <line x1="15" y1="6" x2="15" y2="21" />
+                    </svg>
+                    Карта
+                  </span>
                 )}
               </button>
             </>
@@ -1699,7 +2130,7 @@ function App() {
                           <strong>{booking.listing?.title}</strong><br />
                           <span className="text-muted">Локація: {booking.listing?.location}</span>
                         </td>
-                        <td>{booking.listing?.user?.name || 'Власник'}</td>
+                        <td>{booking.listing?.user ? `${booking.listing.user.firstName || ''} ${booking.listing.user.lastName || ''}`.trim() : 'Власник'}</td>
                         <td>{startStr} — {endStr}</td>
                         <td>
                           <strong>{booking.totalPrice} грн</strong><br />
@@ -1846,7 +2277,7 @@ function App() {
                           <strong>{booking.listing?.title}</strong>
                         </td>
                         <td>
-                          {booking.tenant?.name || 'Анонім'}<br />
+                          {booking.tenant ? `${booking.tenant.firstName || ''} ${booking.tenant.lastName || ''}`.trim() : 'Анонім'}<br />
                           <span className="text-muted">{booking.tenant?.email}</span>
                         </td>
                         <td>{startStr} — {endStr}</td>
@@ -1920,7 +2351,7 @@ function App() {
                 
                 <h4 style={{ marginTop: '20px', marginBottom: '5px' }}>Власник</h4>
                 <p>
-                  {selectedListing.user?.name || 'Анонімний користувач'} ({selectedListing.user?.email})
+                  {selectedListing.user ? `${selectedListing.user.firstName || ''} ${selectedListing.user.lastName || ''}`.trim() : 'Анонімний користувач'} ({selectedListing.user?.email})
                   {selectedListing.user?.ownerAvgRating !== undefined && selectedListing.user?.ownerAvgRating !== null && (
                     <span style={{ 
                       marginLeft: '8px', 
@@ -1953,7 +2384,7 @@ function App() {
                   </div>
                 )}
 
-                {/* ⭐️ Розділ відгуків та рейтингів */}
+                {/* Розділ відгуків та рейтингів */}
                 <div className="reviews-section" style={{ marginTop: '40px', borderTop: '1px solid #ebebeb', paddingTop: '32px' }}>
                   <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontSize: '20px', fontWeight: 700 }}>
                     <span style={{ color: '#ffc107' }}>★</span>
@@ -1980,7 +2411,7 @@ function App() {
                         <div key={rev.id} className="review-item" style={{ borderBottom: '1px solid #f5f5f5', paddingBottom: '16px' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                             <div>
-                              <strong style={{ fontSize: '15px', color: '#222' }}>{rev.user?.name || rev.user?.email || 'Користувач'}</strong>
+                               <strong style={{ fontSize: '15px', color: '#222' }}>{rev.user ? `${rev.user.firstName || ''} ${rev.user.lastName || ''}`.trim() || rev.user.email : 'Користувач'}</strong>
                               <div style={{ fontSize: '12px', color: '#717171', marginTop: '2px' }}>
                                 {new Date(rev.createdAt).toLocaleDateString('uk-UA', { year: 'numeric', month: 'long', day: 'numeric' })}
                               </div>
@@ -2097,7 +2528,9 @@ function App() {
                       alignItems: 'center',
                       gap: '6px'
                     }}>
-                      <span>⚡</span>
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style={{ display: 'inline-block' }}>
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                      </svg>
                       <span>Миттєве підтвердження оренди</span>
                     </div>
                   )}
@@ -2112,7 +2545,15 @@ function App() {
                       color: '#d46b08',
                       marginBottom: '15px'
                     }}>
-                      <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>📅 Зайняті дати:</div>
+                      <div style={{ fontWeight: 'bold', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5">
+                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                          <line x1="16" y1="2" x2="16" y2="6" />
+                          <line x1="8" y1="2" x2="8" y2="6" />
+                          <line x1="3" y1="10" x2="21" y2="10" />
+                        </svg>
+                        <span>Зайняті дати:</span>
+                      </div>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                         {bookedDates.map((bd, index) => {
                           const s = new Date(bd.startDate).toLocaleDateString('uk-UA');
@@ -2175,7 +2616,16 @@ function App() {
                         className="primary" 
                         style={{ width: '100%', marginTop: '15px' }}
                       >
-                        {selectedListing.instantBooking ? 'Забронювати миттєво ⚡' : 'Надіслати запит на оренду'}
+                        {selectedListing.instantBooking ? (
+                          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                            </svg>
+                            Забронювати миттєво
+                          </span>
+                        ) : (
+                          'Надіслати запит на оренду'
+                        )}
                       </button>
                     </form>
                   )}
@@ -2209,16 +2659,30 @@ function App() {
 
             <form onSubmit={handleAuthSubmit}>
               {authMode === 'register' && (
-                <div className="form-group">
-                  <label htmlFor="name-input">Ім'я</label>
-                  <input 
-                    type="text" 
-                    id="name-input"
-                    value={name}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
-                    placeholder="Ваше ім'я..."
-                  />
-                </div>
+                <>
+                  <div className="form-group">
+                    <label htmlFor="firstName-input">Ім'я *</label>
+                    <input 
+                      type="text" 
+                      id="firstName-input"
+                      required
+                      value={firstName}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => setFirstName(e.target.value)}
+                      placeholder="Ваше ім'я..."
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="lastName-input">Прізвище *</label>
+                    <input 
+                      type="text" 
+                      id="lastName-input"
+                      required
+                      value={lastName}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => setLastName(e.target.value)}
+                      placeholder="Ваше прізвище..."
+                    />
+                  </div>
+                </>
               )}
 
               <div className="form-group">
@@ -2249,6 +2713,9 @@ function App() {
                 {authMode === 'login' ? 'Увійти' : 'Зареєструватися'}
               </button>
             </form>
+
+            <div style={{ margin: '15px 0', textAlign: 'center', color: '#666', fontSize: '14px' }}>або</div>
+            <div id="google-login-btn" style={{ display: 'flex', justifyContent: 'center' }}></div>
           </div>
         </div>
       )}

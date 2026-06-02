@@ -51,7 +51,7 @@ export default function MapSelector({ initialLatitude, initialLongitude, initial
     const defaultCenter: L.LatLngExpression = 
       initialLatitude && initialLongitude 
         ? [initialLatitude, initialLongitude] 
-        : [49.8397, 24.0297]; // Львів за замовчуванням
+        : [49.4230, 26.9871]; // Хмельницький за замовчуванням
     
     const zoomLevel = initialLatitude && initialLongitude ? 16 : 13;
 
@@ -61,12 +61,14 @@ export default function MapSelector({ initialLatitude, initialLongitude, initial
         zoomControl: false
       }).setView(defaultCenter, zoomLevel);
 
-      // Додавання шару карти
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+      // Додаємо шар карти CartoDB Positron (сріблястий преміальний стиль у дусі Airbnb / Google Maps)
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
       }).addTo(mapRef.current);
 
-      L.control.zoom({ position: 'bottomright' }).addTo(mapRef.current);
+      L.control.zoom({ position: 'topright' }).addTo(mapRef.current);
 
       // Обробка кліку по карті для встановлення маркера
       mapRef.current.on('click', async (e: L.LeafletMouseEvent) => {

@@ -44,6 +44,15 @@ export const authAPI = {
     return handleResponse(res);
   },
 
+  async googleLogin(token: string) {
+    const res = await fetch(`${API_BASE_URL}/auth/google`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ token }),
+    });
+    return handleResponse(res);
+  },
+
   async getProfile() {
     const res = await fetch(`${API_BASE_URL}/auth/profile`, {
       method: 'GET',
