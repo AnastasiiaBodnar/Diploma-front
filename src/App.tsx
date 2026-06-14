@@ -28,6 +28,7 @@ interface Listing {
   deposit: number;
   location: string;
   imageUrl?: string | null;
+  imageUrls: string[];
   latitude?: number | null;
   longitude?: number | null;
   userId: number;
@@ -40,6 +41,7 @@ interface Listing {
     email: string;
     ownerAvgRating?: number | null;
     ownerReviewCount?: number;
+    createdAt?: string;
   };
   createdAt?: string;
   instantBooking?: boolean; // Додано поле гібридного бронювання
@@ -47,6 +49,8 @@ interface Listing {
   reviewCount?: number;
   reviews?: any[];
   bookings?: any[];
+  checkInTime?: string;
+  checkOutTime?: string;
 }
 
 interface Booking {
@@ -185,7 +189,89 @@ const renderHighlightedText = (text: string, highlight: string) => {
       {after}
     </span>
   );
+
 };
+
+const CATEGORY_PHOTOS: Record<string, string[]> = {
+  tools: [
+    'https://images.unsplash.com/photo-1581244277943-fe4a9c777189?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1534224039826-c7a0dea0e66a?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1572981779307-38b8cabb2407?auto=format&fit=crop&w=600&q=80'
+  ],
+  electronics: [
+    'https://images.unsplash.com/photo-1588508065123-287b28e013da?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1468495244123-6c6c332eeece?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=600&q=80'
+  ],
+  sport: [
+    'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?auto=format&fit=crop&w=600&q=80'
+  ],
+  tourism: [
+    'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1486915309851-b0cc1f8a0084?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1533873984035-25970ab07461?auto=format&fit=crop&w=600&q=80'
+  ],
+  transport: [
+    'https://images.unsplash.com/photo-1485291571150-772bcfc10da5?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1542282088-fe8426682b8f?auto=format&fit=crop&w=600&q=80'
+  ],
+  'photo-video': [
+    'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1452780212940-6f5c0d14d848?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1495707902641-75cac588d2e9?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=600&q=80'
+  ],
+  clothing: [
+    'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1479064555552-3ef4979f8908?auto=format&fit=crop&w=600&q=80'
+  ],
+  'home-garden': [
+    'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1413977886085-3bbbf9a7cf6e?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=600&q=80'
+  ],
+  kids: [
+    'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1515488042361-404e9250afef?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1555448248-2571daf6344b?auto=format&fit=crop&w=600&q=80'
+  ],
+  hobbies: [
+    'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1582139329536-e7284fece509?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=600&q=80'
+  ]
+};
+
+const DEFAULT_PHOTOS = [
+  'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=600&q=80'
+];
+
+function getGalleryPhotos(listing: Listing | null): string[] {
+  if (!listing) return [];
+  if (listing.imageUrls && listing.imageUrls.length > 0) {
+    return listing.imageUrls;
+  }
+  const mainPhoto = listing.imageUrl || 'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=600&q=80';
+  const categorySlug = listing.category?.slug || '';
+  const subPhotos = CATEGORY_PHOTOS[categorySlug] || DEFAULT_PHOTOS;
+  return [mainPhoto, ...subPhotos].slice(0, 5);
+}
 
 function getCategorySvgIcon(slug: string) {
   const stroke = "currentColor";
@@ -279,6 +365,7 @@ function App() {
   const [authMode, setAuthMode] = useState<AuthMode>('login');
   const [isAuthOpen, setIsAuthOpen] = useState<boolean>(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState<boolean>(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState<boolean>(false);
 
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -293,7 +380,7 @@ function App() {
   // Фільтрація
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [locationQuery, setLocationQuery] = useState<string>('Хмельницький');
+  const [locationQuery, setLocationQuery] = useState<string>('');
   const [minPriceQuery, setMinPriceQuery] = useState<string>('');
   const [maxPriceQuery, setMaxPriceQuery] = useState<string>('');
 
@@ -313,8 +400,10 @@ function App() {
   const [newLatitude, setNewLatitude] = useState<number | null>(null);
   const [newLongitude, setNewLongitude] = useState<number | null>(null);
   const [newInstantBooking, setNewInstantBooking] = useState<boolean>(false); // Поле миттєвого бронювання
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string>('');
+  const [newCheckInTime, setNewCheckInTime] = useState<string>('14:00');
+  const [newCheckOutTime, setNewCheckOutTime] = useState<string>('12:00');
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
   // Редагування оголошення
   const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
@@ -328,8 +417,11 @@ function App() {
   const [editLatitude, setEditLatitude] = useState<number | null>(null);
   const [editLongitude, setEditLongitude] = useState<number | null>(null);
   const [editInstantBooking, setEditInstantBooking] = useState<boolean>(false);
-  const [editImageFile, setEditImageFile] = useState<File | null>(null);
-  const [editImagePreview, setEditImagePreview] = useState<string>('');
+  const [editCheckInTime, setEditCheckInTime] = useState<string>('14:00');
+  const [editCheckOutTime, setEditCheckOutTime] = useState<string>('12:00');
+  const [editImageFiles, setEditImageFiles] = useState<File[]>([]);
+  const [editImagePreviews, setEditImagePreviews] = useState<string[]>([]);
+  const [shouldReplaceImages, setShouldReplaceImages] = useState<boolean>(false);
 
   // Сповіщення (Notification Bell)
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -348,7 +440,7 @@ function App() {
   const [isMobileMapOpen, setIsMobileMapOpen] = useState<boolean>(false);
 
   // Чи показувати карту на головній сторінці (тільки при фільтрі локації)
-  const [showMap, setShowMap] = useState<boolean>(true);
+  const [showMap, setShowMap] = useState<boolean>(false);
 
   interface LocationSuggestion {
     display_name: string;
@@ -359,7 +451,7 @@ function App() {
   // Стейт-змінні для автозаповнення локацій (як на Airbnb)
   const [locationSuggestions, setLocationSuggestions] = useState<LocationSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
-  const [mapCenter, setMapCenter] = useState<[number, number] | null>([49.4229, 26.9871]);
+  const [mapCenter, setMapCenter] = useState<[number, number] | null>(null);
 
   // Кабінети
   const [myRentals, setMyRentals] = useState<Booking[]>([]);
@@ -370,6 +462,19 @@ function App() {
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  // Airbnb Редизайн Стейт-Змінні
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState<boolean>(false);
+  const [isLightboxOpen, setIsLightboxOpen] = useState<boolean>(false);
+  const [lightboxPhotoIndex, setLightboxPhotoIndex] = useState<number>(0);
+  const [isMobileView, setIsMobileView] = useState<boolean>(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobileView(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
 
   // Ініціалізація даних (завантаження профілю та категорій)
   useEffect(() => {
@@ -509,12 +614,18 @@ function App() {
     return () => clearTimeout(delayDebounceFn);
   }, [locationQuery]);
 
-  // Закриття підказок при кліку поза полем локації
+  // Закриття підказок та випадних меню при кліку ззовні
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (!target.closest('.filter-segment')) {
         setShowSuggestions(false);
+      }
+      if (!target.closest('.profile-menu-container')) {
+        setIsProfileMenuOpen(false);
+      }
+      if (!target.closest('.notifications-container')) {
+        setIsNotificationsOpen(false);
       }
     };
     document.addEventListener('click', handleOutsideClick);
@@ -544,7 +655,6 @@ function App() {
   };
 
   // Позначення сповіщення як прочитаного
-  /*
   const handleMarkAsRead = async (id: number) => {
     try {
       await notificationAPI.markAsRead(id);
@@ -553,7 +663,17 @@ function App() {
       console.error('Помилка позначення сповіщення як прочитаного:', err.message);
     }
   };
-  */
+
+  const handleMarkAllAsRead = async () => {
+    const unread = notifications.filter(n => !n.isRead);
+    if (unread.length === 0) return;
+    try {
+      await Promise.all(unread.map(n => notificationAPI.markAsRead(n.id)));
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    } catch (err: any) {
+      console.error('Помилка позначення всіх сповіщень як прочитаних:', err.message);
+    }
+  };
 
   // Завантаження зайнятих дат речі
   const loadListingAvailability = async (listingId: number) => {
@@ -579,44 +699,62 @@ function App() {
     }
   };
 
-  // Закриття детального перегляду речі
-  const handleCloseDetails = () => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('listing')) {
-      // Спробуємо закрити вкладку, якщо вона була відкрита у новому вікні
-      window.close();
-      // Якщо закриття не спрацювало, просто очищаємо стейт та URL
-      setSelectedListing(null);
-      window.history.replaceState({}, document.title, window.location.pathname);
-    } else {
-      setSelectedListing(null);
-    }
+
+  // Допоміжна функція отримання дати без часових зсувів
+  const getLocalDateString = (dateObjOrStr: Date | string) => {
+    const d = new Date(dateObjOrStr);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  // Перевірка зайнятості для заїзду (Check-in)
+  const isDateBusyForCheckIn = (dateStr: string) => {
+    return bookedDates.some(bd => {
+      const startStr = getLocalDateString(bd.startDate);
+      const endStr = getLocalDateString(bd.endDate);
+      return dateStr >= startStr && dateStr < endStr;
+    });
+  };
+
+  // Перевірка зайнятості для виїзду (Check-out)
+  const isDateBusyForCheckOut = (dateStr: string) => {
+    return bookedDates.some(bd => {
+      const startStr = getLocalDateString(bd.startDate);
+      const endStr = getLocalDateString(bd.endDate);
+      return dateStr > startStr && dateStr <= endStr;
+    });
   };
 
   // Клік на день у кастомному календарі
   const handleDayClick = (dateStr: string) => {
-    if (isDateInPast(dateStr) || isDateBusy(dateStr)) return;
+    if (isDateInPast(dateStr)) return;
 
     if (!startDate || (startDate && endDate)) {
+      if (isDateBusyForCheckIn(dateStr)) return;
       setStartDate(dateStr);
       setEndDate('');
     } else {
-      const start = new Date(startDate);
-      const end = new Date(dateStr);
-
-      if (end < start) {
+      if (dateStr < startDate) {
+        if (isDateBusyForCheckIn(dateStr)) return;
         setStartDate(dateStr);
+        setEndDate('');
+      } else if (dateStr === startDate) {
+        setStartDate('');
         setEndDate('');
       } else {
         // Перевіряємо, чи немає зайнятих дат всередині діапазону
         const hasOverlap = bookedDates.some(bd => {
-          const bStart = new Date(bd.startDate);
-          const bEnd = new Date(bd.endDate);
-          return start <= bEnd && end >= bStart;
+          const startStr = getLocalDateString(bd.startDate);
+          const endStr = getLocalDateString(bd.endDate);
+          return startDate < endStr && dateStr > startStr;
         });
 
-        if (hasOverlap) {
-          // Якщо є накладання, робимо клікнуту дату новою початковою
+        const isEndBusy = isDateBusyForCheckOut(dateStr);
+
+        if (hasOverlap || isEndBusy) {
+          if (isDateBusyForCheckIn(dateStr)) return;
           setStartDate(dateStr);
           setEndDate('');
         } else {
@@ -624,18 +762,6 @@ function App() {
         }
       }
     }
-  };
-
-  const isDateBusy = (dateStr: string) => {
-    const d = new Date(dateStr);
-    d.setHours(0,0,0,0);
-    return bookedDates.some(bd => {
-      const start = new Date(bd.startDate);
-      const end = new Date(bd.endDate);
-      start.setHours(0,0,0,0);
-      end.setHours(0,0,0,0);
-      return d >= start && d <= end;
-    });
   };
 
   const isDateInPast = (dateStr: string) => {
@@ -742,7 +868,26 @@ function App() {
             
             const { day, dateStr } = d;
             const isPast = isDateInPast(dateStr!);
-            const isBusy = isDateBusy(dateStr!);
+            const isBusyIn = isDateBusyForCheckIn(dateStr!);
+            const isBusyOut = isDateBusyForCheckOut(dateStr!);
+            
+            // Визначаємо, чи зайнятий цей день для кліку
+            const isBusy = (() => {
+              if (isPast) return false;
+              if (!startDate) {
+                return isBusyIn;
+              } else {
+                if (dateStr! < startDate) return isBusyIn;
+                if (dateStr! === startDate) return false;
+                const hasOverlap = bookedDates.some(bd => {
+                  const startStr = getLocalDateString(bd.startDate);
+                  const endStr = getLocalDateString(bd.endDate);
+                  return startDate < endStr && dateStr! > startStr;
+                });
+                return hasOverlap || isBusyOut;
+              }
+            })();
+
             const isSelStart = startDate === dateStr;
             const isSelEnd = endDate === dateStr;
             const isInRange = startDate && endDate && dateStr! > startDate && dateStr! < endDate;
@@ -844,11 +989,27 @@ function App() {
   };
 
   // Обробка пошуку
-  const handleSearchSubmit = (e: FormEvent) => {
+  const handleSearchSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     if (locationQuery.trim()) {
       setShowMap(true);
+      
+      // Геокодуємо введений запит для фокусування карти
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationQuery)}&limit=1`
+        );
+        if (response.ok) {
+          const results = await response.json();
+          if (results && results.length > 0) {
+            const first = results[0];
+            setMapCenter([parseFloat(first.lat), parseFloat(first.lon)]);
+          }
+        }
+      } catch (err) {
+        console.error('Помилка геокодування при пошуку:', err);
+      }
     } else {
       setShowMap(false);
     }
@@ -879,6 +1040,7 @@ function App() {
   // Реєстрація / Вхід
   const handleAuthSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
     setErrorMsg(null);
     try {
@@ -955,16 +1117,32 @@ function App() {
 
   // Обробка зміни фото
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
+    if (e.target.files) {
+      const selectedFiles = Array.from(e.target.files);
+      const combinedFiles = [...imageFiles, ...selectedFiles].slice(0, 3);
+      setImageFiles(combinedFiles);
+      
+      // Анулюємо старі об'єктні URL для очищення пам'яті
+      imagePreviews.forEach(url => URL.revokeObjectURL(url));
+      
+      const previews = combinedFiles.map(file => URL.createObjectURL(file));
+      setImagePreviews(previews);
     }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    const updatedFiles = imageFiles.filter((_, i) => i !== index);
+    setImageFiles(updatedFiles);
+    
+    URL.revokeObjectURL(imagePreviews[index]);
+    const updatedPreviews = imagePreviews.filter((_, i) => i !== index);
+    setImagePreviews(updatedPreviews);
   };
 
   // Створення оголошення
   const handleCreateListingSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     if (!currentUser) {
       setIsAuthOpen(true);
       return;
@@ -972,6 +1150,11 @@ function App() {
 
     if (!newTitle || !newDescription || !newPrice || !newDeposit || !newLocation || !newCategoryId) {
       setErrorMsg('Будь ласка, заповніть усі поля');
+      return;
+    }
+
+    if (imageFiles.length < 2 || imageFiles.length > 3) {
+      setErrorMsg('Будь ласка, завантажте 2 або 3 обов’язкові фотографії');
       return;
     }
 
@@ -987,15 +1170,19 @@ function App() {
       formData.append('location', newLocation);
       formData.append('categoryId', newCategoryId);
       formData.append('instantBooking', newInstantBooking ? 'true' : 'false');
+      formData.append('checkInTime', newCheckInTime);
+      formData.append('checkOutTime', newCheckOutTime);
       if (newLatitude !== null) {
         formData.append('latitude', newLatitude.toString());
       }
       if (newLongitude !== null) {
         formData.append('longitude', newLongitude.toString());
       }
-      if (imageFile) {
-        formData.append('image', imageFile);
-      }
+      
+      // Додаємо всі 2 або 3 файли фотографій
+      imageFiles.forEach(file => {
+        formData.append('images', file);
+      });
 
       await listingAPI.createListing(formData);
       setSuccessMsg('Оголошення успішно додано!');
@@ -1010,8 +1197,10 @@ function App() {
       setNewLatitude(null);
       setNewLongitude(null);
       setNewInstantBooking(false);
-      setImageFile(null);
-      setImagePreview('');
+      setNewCheckInTime('14:00');
+      setNewCheckOutTime('12:00');
+      setImageFiles([]);
+      setImagePreviews([]);
       
       setActiveView('listings');
     } catch (err: any) {
@@ -1052,23 +1241,46 @@ function App() {
     setEditLatitude(listing.latitude || null);
     setEditLongitude(listing.longitude || null);
     setEditInstantBooking(listing.instantBooking || false);
-    setEditImageFile(null);
-    setEditImagePreview(listing.imageUrl || '');
+    setEditCheckInTime(listing.checkInTime || '14:00');
+    setEditCheckOutTime(listing.checkOutTime || '12:00');
+    setEditImageFiles([]);
+    setEditImagePreviews(listing.imageUrls || []);
+    setShouldReplaceImages(false);
     setIsEditOpen(true);
   };
 
   // Обробка зміни фото при редагуванні
   const handleEditImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setEditImageFile(file);
-      setEditImagePreview(URL.createObjectURL(file));
+    if (e.target.files) {
+      const selectedFiles = Array.from(e.target.files);
+      const combinedFiles = [...editImageFiles, ...selectedFiles].slice(0, 3);
+      setEditImageFiles(combinedFiles);
+      
+      // Revoke only local object URLs to avoid memory leaks
+      editImagePreviews.forEach(url => {
+        if (url.startsWith('blob:')) URL.revokeObjectURL(url);
+      });
+      
+      const previews = combinedFiles.map(file => URL.createObjectURL(file));
+      setEditImagePreviews(previews);
     }
+  };
+
+  const handleRemoveEditImage = (index: number) => {
+    const updatedFiles = editImageFiles.filter((_, i) => i !== index);
+    setEditImageFiles(updatedFiles);
+    
+    if (editImagePreviews[index].startsWith('blob:')) {
+      URL.revokeObjectURL(editImagePreviews[index]);
+    }
+    const updatedPreviews = editImagePreviews.filter((_, i) => i !== index);
+    setEditImagePreviews(updatedPreviews);
   };
 
   // Збереження оновленого оголошення
   const handleEditListingSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     if (!editingListing) return;
 
     if (!editTitle || !editDescription || !editPrice || !editDeposit || !editLocation || !editCategoryId) {
@@ -1088,14 +1300,23 @@ function App() {
       formData.append('location', editLocation);
       formData.append('categoryId', editCategoryId);
       formData.append('instantBooking', editInstantBooking ? 'true' : 'false');
+      formData.append('checkInTime', editCheckInTime);
+      formData.append('checkOutTime', editCheckOutTime);
       if (editLatitude !== null) {
         formData.append('latitude', editLatitude.toString());
       }
       if (editLongitude !== null) {
         formData.append('longitude', editLongitude.toString());
       }
-      if (editImageFile) {
-        formData.append('image', editImageFile);
+      if (shouldReplaceImages) {
+        if (editImageFiles.length < 2 || editImageFiles.length > 3) {
+          setErrorMsg('Будь ласка, завантажте 2 або 3 обов’язкові фотографії для заміни');
+          setLoading(false);
+          return;
+        }
+        editImageFiles.forEach(file => {
+          formData.append('images', file);
+        });
       }
 
       await listingAPI.updateListing(editingListing.id, formData);
@@ -1115,6 +1336,7 @@ function App() {
   // Створення бронювання
   const handleBookingSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     if (!currentUser) {
       setIsAuthOpen(true);
       return;
@@ -1126,13 +1348,15 @@ function App() {
       return;
     }
 
-    // Перевірка на перетин дат на клієнті
-    const start = new Date(startDate);
-    const end = new Date(endDate);
+    // Перевірка на перетин дат на клієнті з урахуванням часу заїзду/виїзду
+    const checkInTime = selectedListing.checkInTime || '14:00';
+    const checkOutTime = selectedListing.checkOutTime || '12:00';
+    const start = new Date(`${startDate}T${checkInTime}:00`);
+    const end = new Date(`${endDate}T${checkOutTime}:00`);
     const hasOverlap = bookedDates.some(bd => {
       const bStart = new Date(bd.startDate);
       const bEnd = new Date(bd.endDate);
-      return start <= bEnd && end >= bStart;
+      return start < bEnd && end > bStart;
     });
 
     if (hasOverlap) {
@@ -1169,6 +1393,7 @@ function App() {
   // Надіслати відгук про річ
   const handleReviewSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     if (!currentUser || !selectedListing) return;
     if (reviewRating === 0) {
       setErrorMsg('Будь ласка, оберіть оцінку від 1 до 5 зірок');
@@ -1234,14 +1459,23 @@ function App() {
     }
   };
 
-  // Оновлення статусу власником (CONFIRMED або REJECTED)
-  const handleStatusUpdate = async (id: number, status: 'CONFIRMED' | 'REJECTED') => {
-    const text = status === 'CONFIRMED' ? 'підтвердити' : 'відхилити';
+  // Оновлення статусу власником (CONFIRMED, REJECTED або COMPLETED)
+  const handleStatusUpdate = async (id: number, status: 'CONFIRMED' | 'REJECTED' | 'COMPLETED') => {
+    let text = '';
+    if (status === 'CONFIRMED') text = 'підтвердити';
+    else if (status === 'REJECTED') text = 'відхилити';
+    else if (status === 'COMPLETED') text = 'підтвердити повернення речі для';
+    
     if (!confirm(`Ви впевнені, що хочете ${text} цей запит?`)) return;
     setLoading(true);
     try {
       await bookingAPI.updateBookingStatus(id, status);
-      setSuccessMsg(`Запит успішно ${status === 'CONFIRMED' ? 'підтверджено' : 'відхилено'}`);
+      let successMsgText = '';
+      if (status === 'CONFIRMED') successMsgText = 'підтверджено';
+      else if (status === 'REJECTED') successMsgText = 'відхилено';
+      else if (status === 'COMPLETED') successMsgText = 'завершено (повернення підтверджено)';
+      
+      setSuccessMsg(`Запит успішно ${successMsgText}`);
       loadMyRequests();
     } catch (err: any) {
       setErrorMsg(err.message || 'Не вдалося змінити статус запиту');
@@ -1269,7 +1503,7 @@ function App() {
   const bookingDetails = calculateTotal();
 
   return (
-    <div id="root">
+    <div className="app-container">
       {/* Шапка сайту в стилі Airbnb */}
       <header className="app-header" style={{
         display: 'flex',
@@ -1277,10 +1511,7 @@ function App() {
         alignItems: 'center',
         padding: '16px 24px',
         borderBottom: '1px solid #ebebeb',
-        position: 'sticky',
-        top: 0,
         backgroundColor: '#ffffff',
-        zIndex: 1020,
       }}>
         {/* Логотип */}
         <div 
@@ -1475,7 +1706,6 @@ function App() {
                       background: '#FF385C',
                       border: 'none',
                       color: '#ffffff',
-                      border: 'none',
                       fontWeight: 700,
                       fontSize: '14px',
                       padding: '10px 20px',
@@ -1506,24 +1736,191 @@ function App() {
         {/* Права частина шапки */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {currentUser && (
-            <button 
-              onClick={() => setActiveView('create')}
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: '10px 16px',
-                borderRadius: '20px',
-                fontSize: '13px',
-                fontWeight: 600,
-                color: '#222222',
-                cursor: 'pointer',
-                transition: 'background-color 0.2s'
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f7f7f7'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-            >
-              Здати річ в оренду
-            </button>
+            <>
+              <button 
+                onClick={() => { setActiveView('create'); setSelectedListing(null); }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '10px 16px',
+                  borderRadius: '20px',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  color: '#222222',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.2s'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f7f7f7'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+              >
+                Здати річ в оренду
+              </button>
+
+              {/* Дзвоник сповіщень */}
+              <div className="notifications-container" style={{ position: 'relative' }}>
+                <button 
+                  onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    color: '#222222',
+                    transition: 'background-color 0.2s',
+                    position: 'relative'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f7f7f7'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                >
+                  <svg 
+                    viewBox="0 0 24 24" 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    aria-hidden="true" 
+                    role="presentation" 
+                    focusable="false" 
+                    style={{ display: 'block', fill: 'none', height: '20px', width: '20px', stroke: 'currentColor', strokeWidth: 2, overflow: 'visible' }}
+                  >
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+
+                  {notifications.filter(n => !n.isRead).length > 0 && (
+                    <span style={{
+                      position: 'absolute',
+                      top: '2px',
+                      right: '2px',
+                      backgroundColor: '#FF385C',
+                      color: '#ffffff',
+                      fontSize: '10px',
+                      fontWeight: 700,
+                      borderRadius: '50%',
+                      padding: '2px 6px',
+                      minWidth: '18px',
+                      height: '18px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      border: '2px solid #ffffff',
+                      boxSizing: 'border-box'
+                    }}>
+                      {notifications.filter(n => !n.isRead).length}
+                    </span>
+                  )}
+                </button>
+
+                {isNotificationsOpen && (
+                  <div 
+                    className="notifications-dropdown"
+                    style={{
+                      position: 'absolute',
+                      top: '45px',
+                      right: '0',
+                      backgroundColor: '#ffffff',
+                      border: 'none',
+                      borderRadius: '16px',
+                      width: '360px',
+                      boxShadow: '0 8px 28px rgba(0, 0, 0, 0.15)',
+                      zIndex: 1010,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      maxHeight: '400px',
+                      overflow: 'hidden'
+                    }}
+                  >
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: '16px 20px',
+                      borderBottom: '1px solid #f0f0f0'
+                    }}>
+                      <span style={{ fontSize: '16px', fontWeight: 700, color: '#222222' }}>Сповіщення</span>
+                      {notifications.filter(n => !n.isRead).length > 0 && (
+                        <button 
+                          onClick={handleMarkAllAsRead}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#FF385C',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            padding: '0'
+                          }}
+                        >
+                          Позначити всі як прочитані
+                        </button>
+                      )}
+                    </div>
+
+                    <div style={{ overflowY: 'auto', flex: 1, padding: '8px 0' }}>
+                      {notifications.length === 0 ? (
+                        <div style={{ padding: '24px 20px', textAlign: 'center', color: '#717171', fontSize: '14px' }}>
+                          Немає нових сповіщень
+                        </div>
+                      ) : (
+                        notifications.map((item) => (
+                          <div 
+                            key={item.id}
+                            onClick={() => {
+                              if (!item.isRead) handleMarkAsRead(item.id);
+                            }}
+                            style={{
+                              padding: '12px 20px',
+                              borderBottom: '1px solid #f7f7f7',
+                              backgroundColor: item.isRead ? '#ffffff' : '#fff5f6',
+                              cursor: item.isRead ? 'default' : 'pointer',
+                              transition: 'background-color 0.2s',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '4px',
+                              textAlign: 'left'
+                            }}
+                          >
+                            <div style={{ 
+                              fontSize: '13px', 
+                              color: '#222222', 
+                              fontWeight: item.isRead ? 400 : 600,
+                              lineHeight: '1.4'
+                            }}>
+                              {item.message}
+                            </div>
+                            <div style={{ 
+                              fontSize: '11px', 
+                              color: '#717171',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px'
+                            }}>
+                              <span>{new Date(item.createdAt).toLocaleDateString('uk-UA', {
+                                day: 'numeric',
+                                month: 'short',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}</span>
+                              {!item.isRead && (
+                                <span style={{
+                                  width: '6px',
+                                  height: '6px',
+                                  backgroundColor: '#FF385C',
+                                  borderRadius: '50%',
+                                  display: 'inline-block'
+                                }} />
+                              )}
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
           )}
 
           {/* Контейнер випадаючого меню профілю */}
@@ -1574,18 +1971,6 @@ function App() {
                 )}
               </div>
               
-              {notifications.filter(n => !n.isRead).length > 0 && (
-                <span style={{
-                  position: 'absolute',
-                  top: '1px',
-                  right: '1px',
-                  width: '8px',
-                  height: '8px',
-                  backgroundColor: '#FF385C',
-                  borderRadius: '50%',
-                  border: '1px solid #ffffff'
-                }}></span>
-              )}
             </button>
 
             {/* Випадаюче вікно меню користувача */}
@@ -1615,7 +2000,7 @@ function App() {
                       Вітаємо, {currentUser.firstName}!
                     </div>
                     <button 
-                      onClick={() => { setActiveView('mylistings'); }}
+                      onClick={() => { setActiveView('mylistings'); setSelectedListing(null); }}
                       style={{ background: 'none', border: 'none', padding: '10px 16px', fontSize: '13px', textAlign: 'left', width: '100%', cursor: 'pointer', fontWeight: 500 }}
                       onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f7f7f7'; }}
                       onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
@@ -1623,7 +2008,7 @@ function App() {
                       Мої оголошення
                     </button>
                     <button 
-                      onClick={() => { setActiveView('rentals'); }}
+                      onClick={() => { setActiveView('rentals'); setSelectedListing(null); }}
                       style={{ background: 'none', border: 'none', padding: '10px 16px', fontSize: '13px', textAlign: 'left', width: '100%', cursor: 'pointer', fontWeight: 500 }}
                       onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f7f7f7'; }}
                       onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
@@ -1631,7 +2016,7 @@ function App() {
                       Мої оренди
                     </button>
                     <button 
-                      onClick={() => { setActiveView('requests'); }}
+                      onClick={() => { setActiveView('requests'); setSelectedListing(null); }}
                       style={{ background: 'none', border: 'none', padding: '10px 16px', fontSize: '13px', textAlign: 'left', width: '100%', cursor: 'pointer', fontWeight: 500 }}
                       onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f7f7f7'; }}
                       onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
@@ -1783,8 +2168,8 @@ function App() {
                         window.open(`/?listing=${item.id}`, '_blank');
                       }}
                     >
-                      {item.imageUrl ? (
-                        <img src={item.imageUrl} alt={item.title} className="listing-card-image" />
+                      {item.imageUrls?.[0] || item.imageUrl ? (
+                        <img src={item.imageUrls?.[0] || item.imageUrl || ''} alt={item.title} className="listing-card-image" />
                       ) : (
                         <div className="listing-card-placeholder">Фото відсутнє</div>
                       )}
@@ -1822,8 +2207,8 @@ function App() {
                             window.open(`/?listing=${item.id}`, '_blank');
                           }}
                         >
-                          {item.imageUrl ? (
-                            <img src={item.imageUrl} alt={item.title} className="listing-card-image" />
+                          {item.imageUrls?.[0] || item.imageUrl ? (
+                            <img src={item.imageUrls?.[0] || item.imageUrl || ''} alt={item.title} className="listing-card-image" />
                           ) : (
                             <div className="listing-card-placeholder">Фото відсутнє</div>
                           )}
@@ -1985,18 +2370,89 @@ function App() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="image">Фотографія речі</label>
+              <label htmlFor="image">Фотографії речі (завантажте від 2 до 3 обов'язкових фото) *</label>
               <input 
                 type="file" 
                 id="image"
                 accept="image/*"
+                multiple
                 onChange={handleImageChange}
+                disabled={imageFiles.length >= 3}
               />
-              {imagePreview && (
-                <div className="image-preview-box">
-                  <img src={imagePreview} alt="Попередній перегляд" className="image-preview-img" />
+              {imagePreviews.length > 0 && (
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '10px' }}>
+                  {imagePreviews.map((url, index) => (
+                    <div key={index} style={{ position: 'relative', width: '100px', height: '100px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #ccc' }}>
+                      <img src={url} alt={`Попередній перегляд ${index + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <button 
+                        type="button"
+                        onClick={() => handleRemoveImage(index)}
+                        style={{
+                          position: 'absolute',
+                          top: '4px',
+                          right: '4px',
+                          width: '20px',
+                          height: '20px',
+                          borderRadius: '50%',
+                          backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                          color: '#fff',
+                          border: 'none',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '12px',
+                          lineHeight: '1',
+                          padding: 0
+                        }}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
                 </div>
               )}
+              {imageFiles.length < 2 && (
+                <span style={{ color: '#ff385c', fontSize: '12px', marginTop: '5px', display: 'block' }}>
+                  Потрібно завантажити щонайменше 2 фотографії (вибрано: {imageFiles.length})
+                </span>
+              )}
+              {imageFiles.length > 0 && (
+                <span style={{ color: '#666', fontSize: '12px', marginTop: '5px', display: 'block' }}>
+                  Вибрано {imageFiles.length} з 3 фотографій
+                </span>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', gap: '15px', margin: '15px 0' }}>
+              <div className="form-group" style={{ flex: 1 }}>
+                <label htmlFor="newCheckInTime">Час отримання (Check-in)</label>
+                <select 
+                  id="newCheckInTime"
+                  value={newCheckInTime}
+                  onChange={(e) => setNewCheckInTime(e.target.value)}
+                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ccc' }}
+                >
+                  {Array.from({ length: 24 }).map((_, h) => {
+                    const time = `${String(h).padStart(2, '0')}:00`;
+                    return <option key={time} value={time}>{time}</option>;
+                  })}
+                </select>
+              </div>
+              <div className="form-group" style={{ flex: 1 }}>
+                <label htmlFor="newCheckOutTime">Час повернення (Check-out)</label>
+                <select 
+                  id="newCheckOutTime"
+                  value={newCheckOutTime}
+                  onChange={(e) => setNewCheckOutTime(e.target.value)}
+                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ccc' }}
+                >
+                  {Array.from({ length: 24 }).map((_, h) => {
+                    const time = `${String(h).padStart(2, '0')}:00`;
+                    return <option key={time} value={time}>{time}</option>;
+                  })}
+                </select>
+              </div>
             </div>
 
             <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '15px 0' }}>
@@ -2012,8 +2468,8 @@ function App() {
               </label>
             </div>
 
-            <button type="submit" className="primary" style={{ width: '100%', marginTop: '10px' }}>
-              Опублікувати оголошення
+            <button type="submit" className="primary" style={{ width: '100%', marginTop: '10px' }} disabled={loading}>
+              {loading ? 'Опублікування...' : 'Опублікувати оголошення'}
             </button>
           </form>
         </section>
@@ -2058,6 +2514,9 @@ function App() {
                     } else if (booking.status === 'CANCELLED') {
                       statusClass = 'status-cancelled';
                       statusText = 'Скасовано';
+                    } else if (booking.status === 'COMPLETED') {
+                      statusClass = 'status-completed';
+                      statusText = 'Завершено (повернуто)';
                     }
 
                     return (
@@ -2205,6 +2664,9 @@ function App() {
                     } else if (booking.status === 'CANCELLED') {
                       statusClass = 'status-cancelled';
                       statusText = 'Скасовано орендарем';
+                    } else if (booking.status === 'COMPLETED') {
+                      statusClass = 'status-completed';
+                      statusText = 'Завершено';
                     }
 
                     return (
@@ -2242,12 +2704,20 @@ function App() {
                             </div>
                           )}
                           {booking.status === 'CONFIRMED' && (
-                            <button 
-                              className="danger"
-                              onClick={() => handleOwnerCancelBooking(booking.id)}
-                            >
-                              Скасувати оренду (форс-мажор)
-                            </button>
+                            <div className="action-buttons">
+                              <button 
+                                className="primary"
+                                onClick={() => handleStatusUpdate(booking.id, 'COMPLETED')}
+                              >
+                                Підтвердити повернення
+                              </button>
+                              <button 
+                                className="danger"
+                                onClick={() => handleOwnerCancelBooking(booking.id)}
+                              >
+                                Скасувати оренду (форс-мажор)
+                              </button>
+                            </div>
                           )}
                         </td>
                       </tr>
@@ -2262,312 +2732,643 @@ function App() {
         </>
       ) : (
         <section className="listing-detail-page-container">
-          <div className="back-link-container">
-            <button className="back-link-btn" onClick={handleCloseDetails}>
-              ← Назад до оголошень
-            </button>
-          </div>
 
-          <div className="listing-detail-page-content">
-            <h2>{selectedListing.title}</h2>
-            <p className="text-muted" style={{ marginBottom: '20px' }}>
-              Категорія: {selectedListing.category?.name} | Локація: {selectedListing.location}
-            </p>
-
-            <div className="listing-detail-layout">
-              <div>
-                {selectedListing.imageUrl ? (
-                  <img src={selectedListing.imageUrl} alt={selectedListing.title} className="detail-image" />
-                ) : (
-                  <div className="detail-placeholder">Фотографії немає</div>
-                )}
-                
-                <h3 style={{ marginTop: '20px', marginBottom: '10px' }}>Опис речі</h3>
-                <p style={{ whiteSpace: 'pre-wrap' }}>{selectedListing.description}</p>
-                
-                <h4 style={{ marginTop: '20px', marginBottom: '5px' }}>Власник</h4>
-                <p>
-                  {selectedListing.user ? `${selectedListing.user.firstName || ''} ${selectedListing.user.lastName || ''}`.trim() : 'Анонімний користувач'} ({selectedListing.user?.email})
-                  {selectedListing.user?.ownerAvgRating !== undefined && selectedListing.user?.ownerAvgRating !== null && (
-                    <span style={{ 
-                      marginLeft: '8px', 
-                      display: 'inline-flex', 
-                      alignItems: 'center', 
-                      gap: '4px',
-                      backgroundColor: '#f7f7f7', 
-                      padding: '2px 8px', 
-                      borderRadius: '12px',
-                      fontSize: '13px',
-                      fontWeight: 600,
-                      color: '#222'
-                    }}>
-                      ★ {selectedListing.user.ownerAvgRating} (рейтинг власника)
-                    </span>
-                  )}
-                </p>
-
-                {selectedListing.latitude !== undefined && selectedListing.latitude !== null &&
-                 selectedListing.longitude !== undefined && selectedListing.longitude !== null && (
-                  <div style={{ marginTop: '28px' }}>
-                    <h3 style={{ marginBottom: '12px' }}>Розташування на карті</h3>
-                    <div style={{ height: '360px', borderRadius: '12px', overflow: 'hidden' }}>
-                      <BrowseMap 
-                        listings={[selectedListing]} 
-                        onListingSelect={() => {}} 
-                        selectedListing={selectedListing} 
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* Розділ відгуків та рейтингів */}
-                <div className="reviews-section" style={{ marginTop: '40px', borderTop: '1px solid #ebebeb', paddingTop: '32px' }}>
-                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontSize: '20px', fontWeight: 700 }}>
-                    <span style={{ color: '#ffc107' }}>★</span>
-                    <span>
-                      {(() => {
-                        if (selectedListing.avgRating !== null && selectedListing.avgRating !== undefined) {
+          {/* Airbnb Title & Meta Row */}
+          <div className="listing-detail-header">
+            <div className="listing-detail-header-left">
+              <h1>{selectedListing.title}</h1>
+              <div className="listing-detail-header-meta">
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  ★ {selectedListing.avgRating !== null && selectedListing.avgRating !== undefined ? (
+                    <>
+                      {selectedListing.avgRating} •{' '}
+                      <span style={{ textDecoration: 'underline', cursor: 'pointer' }} onClick={() => {
+                        document.querySelector('.reviews-section')?.scrollIntoView({ behavior: 'smooth' });
+                      }}>
+                        {selectedListing.reviewCount}{' '}
+                        {(() => {
                           const rCount = selectedListing.reviewCount || 0;
-                          const declension = rCount % 10 === 1 && rCount % 100 !== 11
+                          return rCount % 10 === 1 && rCount % 100 !== 11
                             ? 'відгук'
                             : [2, 3, 4].includes(rCount % 10) && ![12, 13, 14].includes(rCount % 100)
                             ? 'відгуки'
                             : 'відгуків';
-                          return `${selectedListing.avgRating} • ${rCount} ${declension}`;
-                        }
-                        return 'Немає відгуків (Нове)';
-                      })()}
-                    </span>
-                  </h3>
-
-                  {/* Список існуючих відгуків */}
-                  {selectedListing.reviews && selectedListing.reviews.length > 0 ? (
-                    <div className="reviews-list" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px', marginBottom: '32px' }}>
-                      {selectedListing.reviews.map((rev: any) => (
-                        <div key={rev.id} className="review-item" style={{ borderBottom: '1px solid #f5f5f5', paddingBottom: '16px' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                            <div>
-                               <strong style={{ fontSize: '15px', color: '#222' }}>{rev.user ? `${rev.user.firstName || ''} ${rev.user.lastName || ''}`.trim() || rev.user.email : 'Користувач'}</strong>
-                              <div style={{ fontSize: '12px', color: '#717171', marginTop: '2px' }}>
-                                {new Date(rev.createdAt).toLocaleDateString('uk-UA', { year: 'numeric', month: 'long', day: 'numeric' })}
-                              </div>
-                            </div>
-                            <div style={{ color: '#ffc107', fontSize: '14px', letterSpacing: '1px' }}>
-                              {'★'.repeat(rev.rating)}{'☆'.repeat(5 - rev.rating)}
-                            </div>
-                          </div>
-                          <p style={{ margin: 0, fontSize: '14px', color: '#333', lineHeight: '1.5', whiteSpace: 'pre-wrap' }}>
-                            {rev.comment}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
+                        })()}
+                      </span>
+                    </>
                   ) : (
-                    <p style={{ color: '#717171', fontSize: '14px', marginBottom: '32px' }}>
-                      Для цієї речі ще немає відгуків. Будьте першим, хто орендує та оцінить її!
-                    </p>
+                    'Нове оголошення'
                   )}
+                </span>
+                <span>•</span>
+                <span>Категорія: {selectedListing.category?.name}</span>
+                <span>•</span>
+                <a className="meta-location-link" onClick={() => {
+                  document.querySelector('.map-section')?.scrollIntoView({ behavior: 'smooth' });
+                }}>
+                  {selectedListing.location}
+                </a>
+              </div>
+            </div>
 
-                  {/* Форма залишення відгуку */}
-                  {currentUser && currentUser.id !== selectedListing.userId && 
-                   selectedListing.bookings?.some((b: any) => b.tenantId === currentUser.id && b.status === 'CONFIRMED') &&
-                   !selectedListing.reviews?.some((r: any) => r.userId === currentUser.id) && (
-                    <div className="add-review-box" style={{ 
-                      backgroundColor: '#f7f7f7', 
-                      borderRadius: '12px', 
-                      padding: '24px', 
-                      border: '1px solid #ebebeb' 
-                    }}>
-                      <h4 style={{ margin: '0 0 16px 0', fontSize: '16px', fontWeight: 700 }}>Залишити відгук про річ</h4>
-                      
-                      <form onSubmit={handleReviewSubmit}>
-                        <div style={{ marginBottom: '16px' }}>
-                          <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', marginBottom: '8px', color: '#222', letterSpacing: '0.5px' }}>
-                            ВАША ОЦІНКА *
-                          </label>
-                          <div style={{ display: 'flex', gap: '8px' }}>
-                            {[1, 2, 3, 4, 5].map((star) => {
-                              const isFilled = star <= (reviewHoverRating || reviewRating);
-                              return (
-                                <span
-                                  key={star}
-                                  onClick={() => setReviewRating(star)}
-                                  onMouseEnter={() => setReviewHoverRating(star)}
-                                  onMouseLeave={() => setReviewHoverRating(0)}
-                                  style={{
-                                    fontSize: '32px',
-                                    cursor: 'pointer',
-                                    color: isFilled ? '#ffc107' : '#dddddd',
-                                    transition: 'color 0.15s, transform 0.1s',
-                                    display: 'inline-block'
-                                  }}
-                                  className="star-icon"
-                                >
-                                  ★
-                                </span>
-                              );
-                            })}
-                          </div>
-                        </div>
+            <div className="listing-detail-header-actions">
+              <button className="listing-action-btn" onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                setSuccessMsg('Посилання скопійовано в буфер обміну!');
+              }}>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }}>
+                  <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>{' '}
+                Поділитись
+              </button>
+              <button className="listing-action-btn" onClick={() => {
+                setSuccessMsg('Збережено в обране!');
+              }}>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style={{ display: 'inline-block', color: '#FF385C', verticalAlign: 'middle', marginRight: '4px' }}>
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>{' '}
+                Зберегти
+              </button>
+            </div>
+          </div>
 
-                        <div className="form-group" style={{ marginBottom: '16px' }}>
-                          <label htmlFor="review-comment" style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', marginBottom: '8px', color: '#222', letterSpacing: '0.5px' }}>
-                            ВАШ КОМЕНТАР *
-                          </label>
-                          <textarea
-                            id="review-comment"
-                            required
-                            rows={4}
-                            value={reviewComment}
-                            onChange={(e) => setReviewComment(e.target.value)}
-                            placeholder="Поділіться враженнями від оренди цієї речі (стан, якість, робота з власником)..."
-                            style={{ 
-                              width: '100%', 
-                              borderRadius: '8px', 
-                              border: '1px solid #b0b0b0', 
-                              padding: '12px',
-                              fontSize: '14px',
-                              backgroundColor: '#ffffff',
-                              lineHeight: '1.4'
-                            }}
-                          />
-                        </div>
+          <div className={`listing-photo-grid photo-count-${getGalleryPhotos(selectedListing).length}`}>
+            <div 
+              className="photo-grid-main" 
+              style={{ '--bg-image': `url(${getGalleryPhotos(selectedListing)[0]})` } as React.CSSProperties}
+              onClick={() => {
+                setLightboxPhotoIndex(0);
+                setIsLightboxOpen(true);
+              }}
+            >
+              <img src={getGalleryPhotos(selectedListing)[0]} alt={selectedListing.title} />
+            </div>
+            {getGalleryPhotos(selectedListing).slice(1).map((url, index) => (
+              <div 
+                key={index} 
+                className="photo-grid-sub" 
+                onClick={() => {
+                  setLightboxPhotoIndex(index + 1);
+                  setIsLightboxOpen(true);
+                }}
+              >
+                <img src={url} alt={`${selectedListing.title} detail ${index + 1}`} />
+              </div>
+            ))}
+            <button className="show-all-photos-btn" onClick={() => {
+              setLightboxPhotoIndex(0);
+              setIsLightboxOpen(true);
+            }}>
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }}>
+                <path d="M2 2a1 1 0 00-1 1v1a1 1 0 001 1h1a1 1 0 001-1V3a1 1 0 00-1-1H2zM2 6a1 1 0 00-1 1v1a1 1 0 001 1h1a1 1 0 001-1V7a1 1 0 00-1-1H2zM1 11a1 1 0 011-1h1a1 1 0 011 1v1a1 1 0 01-1 1H2a1 1 0 01-1-1v-1zM6 2a1 1 0 00-1 1v1a1 1 0 001 1h1a1 1 0 001-1V3a1 1 0 00-1-1H6zM6 6a1 1 0 00-1 1v1a1 1 0 001 1h1a1 1 0 001-1V7a1 1 0 00-1-1H6zM5 11a1 1 0 011-1h1a1 1 0 011 1v1a1 1 0 01-1 1H6a1 1 0 01-1-1v-1zM10 2a1 1 0 00-1 1v1a1 1 0 001 1h1a1 1 0 001-1V3a1 1 0 00-1-1h-1zM10 6a1 1 0 00-1 1v1a1 1 0 001 1h1a1 1 0 001-1V7a1 1 0 00-1-1h-1zM9 11a1 1 0 011-1h1a1 1 0 011 1v1a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1z" />
+              </svg>{' '}
+              Показати всі фото
+            </button>
+          </div>
 
-                        <button 
-                          type="submit" 
-                          className="primary" 
-                          disabled={reviewRating === 0}
-                          style={{ width: 'auto', padding: '10px 24px', fontSize: '14px' }}
-                        >
-                          Надіслати відгук
-                        </button>
-                      </form>
+          {/* Core Content Layout */}
+          <div className="listing-detail-layout">
+            {/* Left Column */}
+            <div>
+              {/* Host Profile Card */}
+              <div className="host-profile-card">
+                <div className="host-info-text">
+                  <h3>
+                    Орендодавець:{' '}
+                    {selectedListing.user
+                      ? `${selectedListing.user.firstName || ''} ${selectedListing.user.lastName || ''}`.trim()
+                      : 'Анонімний користувач'}
+                  </h3>
+                  <p>
+                    Контактний email: {selectedListing.user?.email || 'не вказано'}
+                    {selectedListing.user?.createdAt && (
+                      <span> • на платформі з {new Date(selectedListing.user.createdAt).getFullYear()} року</span>
+                    )}
+                  </p>
+                </div>
+                <div className={`host-avatar-circle ${currentUser?.id === selectedListing.userId ? 'owner' : ''}`}>
+                  {selectedListing.user?.firstName ? selectedListing.user.firstName.charAt(0).toUpperCase() : 'U'}
+                </div>
+              </div>
+
+              {/* Bullet highlights */}
+              <div className="listing-highlights">
+                {selectedListing.instantBooking && (
+                  <div className="highlight-item">
+                    <div className="highlight-icon">
+                      <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style={{ color: '#1890ff' }}>
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                      </svg>
                     </div>
+                    <div className="highlight-text">
+                      <h4>Миттєве бронювання</h4>
+                      <p>Власник схвалює запити автоматично, якщо обрані дати вільні.</p>
+                    </div>
+                  </div>
+                )}
+                
+                {selectedListing.user?.ownerAvgRating !== undefined && selectedListing.user?.ownerAvgRating !== null && selectedListing.user.ownerAvgRating >= 4.5 && (
+                  <div className="highlight-item">
+                    <div className="highlight-icon">
+                      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: '#FF385C' }}>
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                    <div className="highlight-text">
+                      <h4>Досвідчений власник</h4>
+                      <p>Користувачі високо оцінюють роботу з цим орендодавцем (★ {selectedListing.user.ownerAvgRating}).</p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="highlight-item">
+                  <div className="highlight-icon">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                      <path d="M7 11V7a5 5 0 0110 0v4" />
+                    </svg>
+                  </div>
+                  <div className="highlight-text">
+                    <h4>Повернення застави</h4>
+                    <p>Застава у розмірі {selectedListing.deposit} грн повертається вам після безпечного завершення оренди.</p>
+                  </div>
+                </div>
+
+                <div className="highlight-item">
+                  <div className="highlight-icon">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: '#222222' }}>
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                  </div>
+                  <div className="highlight-text">
+                    <h4>Час отримання та повернення</h4>
+                    <p>Отримання товару: <strong>з {selectedListing.checkInTime || '14:00'}</strong> • Повернення: <strong>до {selectedListing.checkOutTime || '12:00'}</strong> у вибрані дати.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Expandable description */}
+              <div className="expandable-description">
+                <h3 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '12px' }}>Опис речі</h3>
+                <p 
+                  className={`description-text ${selectedListing.description.length > 350 && !isDescriptionExpanded ? 'collapsed' : ''}`}
+                  style={{ whiteSpace: 'pre-wrap', margin: 0 }}
+                >
+                  {selectedListing.description}
+                </p>
+                {selectedListing.description.length > 350 && (
+                  <button 
+                    className="description-expand-btn"
+                    onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                  >
+                    {isDescriptionExpanded ? (
+                      <>
+                        Згорнути опис{' '}
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="3" style={{ transform: 'rotate(180deg)', display: 'inline-block' }}>
+                          <path d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </>
+                    ) : (
+                      <>
+                        Читати далі{' '}
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="3" style={{ display: 'inline-block' }}>
+                          <path d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
+
+              {/* Inline Double Calendar Section */}
+              <div className="inline-calendar-section">
+                <h3>Оберіть дати оренди</h3>
+                <p className="text-muted">
+                  {calculateSelectedNights() > 0 ? (
+                    <>
+                      Тривалість оренди:{' '}
+                      <strong>
+                        {(() => {
+                          const n = calculateSelectedNights();
+                          if (n % 10 === 1 && n % 100 !== 11) return `${n} доба`;
+                          if ([2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100)) return `${n} доби`;
+                          return `${n} діб`;
+                        })()}
+                      </strong>{' '}
+                      ({formatCalendarDate(startDate)} — {formatCalendarDate(endDate)})
+                    </>
+                  ) : (
+                    'Вкажіть період, щоб побачити точний розрахунок вартості'
+                  )}
+                </p>
+                <div className="calendar-grid-container inline-calendar">
+                  {renderMonthView(calendarMonth, true, false)}
+                  {renderMonthView(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 1), false, true)}
+                </div>
+                <div className="calendar-actions-row">
+                  {(startDate || endDate) && (
+                    <button 
+                      type="button" 
+                      className="calendar-clear-btn"
+                      onClick={() => {
+                        setStartDate('');
+                        setEndDate('');
+                        setHoverDate(null);
+                      }}
+                    >
+                      Очистити дати
+                    </button>
                   )}
                 </div>
               </div>
 
-              <div>
-                <div className="booking-box">
-                  <h3>Оформити оренду</h3>
-                  
-                  {selectedListing.instantBooking && (
-                    <div style={{
-                      backgroundColor: '#e6f7ff',
-                      color: '#1890ff',
-                      borderRadius: '8px',
-                      padding: '8px 12px',
-                      fontSize: '12px',
-                      fontWeight: 'bold',
-                      marginBottom: '15px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px'
-                    }}>
-                      <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style={{ display: 'inline-block' }}>
-                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                      </svg>
-                      <span>Миттєве підтвердження оренди</span>
-                    </div>
-                  )}
-
-                  {bookedDates.length > 0 && (
-                    <div style={{
-                      backgroundColor: '#fffbe6',
-                      border: '1px solid #ffe58f',
-                      borderRadius: '8px',
-                      padding: '10px 12px',
-                      fontSize: '12px',
-                      color: '#d46b08',
-                      marginBottom: '15px'
-                    }}>
-                      <div style={{ fontWeight: 'bold', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5">
-                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                          <line x1="16" y1="2" x2="16" y2="6" />
-                          <line x1="8" y1="2" x2="8" y2="6" />
-                          <line x1="3" y1="10" x2="21" y2="10" />
-                        </svg>
-                        <span>Зайняті дати:</span>
-                      </div>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                        {bookedDates.map((bd, index) => {
-                          const s = new Date(bd.startDate).toLocaleDateString('uk-UA');
-                          const e = new Date(bd.endDate).toLocaleDateString('uk-UA');
-                          return (
-                            <span key={index} style={{
-                              backgroundColor: '#fff',
-                              border: '1px solid #ffd591',
-                              borderRadius: '4px',
-                              padding: '2px 6px',
-                              fontSize: '11px'
-                            }}>
-                              {s} — {e}
-                            </span>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="listing-card-price-row">
-                    <span className="listing-card-price">{selectedListing.price} грн / добу</span>
+              {/* Leaflet Map Section */}
+              {selectedListing.latitude !== undefined && selectedListing.latitude !== null &&
+               selectedListing.longitude !== undefined && selectedListing.longitude !== null && (
+                <div className="map-section" style={{ padding: '24px 0', borderBottom: '1px solid #ebebeb' }}>
+                  <h3 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '16px' }}>Де ви будете</h3>
+                  <p className="text-muted" style={{ marginBottom: '16px' }}>Локація: {selectedListing.location}</p>
+                  <div style={{ height: '380px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #ebebeb' }}>
+                    <BrowseMap 
+                      listings={[selectedListing]} 
+                      onListingSelect={() => {}} 
+                      selectedListing={selectedListing} 
+                    />
                   </div>
-                  <p className="text-muted" style={{ marginBottom: '15px' }}>
-                    Сума завдатку (застави): <strong>{selectedListing.deposit} грн</strong> (повертається після оренди)
-                  </p>
+                </div>
+              )}
+            </div>
 
-                  {currentUser?.id === selectedListing.userId ? (
-                    <div className="alert alert-info" style={{ fontSize: '13px', margin: 0 }}>
-                      Це ваше оголошення. Ви не можете орендувати власну річ.
-                    </div>
-                  ) : (
-                    <form onSubmit={handleBookingSubmit}>
+            {/* Right Column Sticky Booking Box */}
+            <div>
+              <div className="booking-box">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '16px' }}>
+                  <div>
+                    <span style={{ fontSize: '22px', fontWeight: 800 }}>{selectedListing.price} грн</span>
+                    <span style={{ fontSize: '14px', color: '#717171' }}> / доба</span>
+                  </div>
+                  <div style={{ fontSize: '14px', fontWeight: 600 }}>
+                    ★ {selectedListing.avgRating !== null && selectedListing.avgRating !== undefined ? (
+                      `${selectedListing.avgRating} (${selectedListing.reviewCount})`
+                    ) : (
+                      'Нове'
+                    )}
+                  </div>
+                </div>
+
+
+
+
+                <p className="text-muted" style={{ marginBottom: '15px' }}>
+                  Сума застави: <strong>{selectedListing.deposit} грн</strong> (повертається після завершення оренди)
+                </p>
+
+                {currentUser?.id === selectedListing.userId ? (
+                  <div className="alert alert-info" style={{ fontSize: '13px', margin: 0 }}>
+                    Це ваше оголошення. Ви не можете орендувати власну річ.
+                  </div>
+                ) : (
+                  <form onSubmit={handleBookingSubmit}>
+                    <div className="date-picker-relative-container">
                       <div className="airbnb-date-picker-trigger" onClick={() => setIsCalendarOpen(true)}>
                         <div className="airbnb-date-seg">
                           <span className="label">ДАТА ПОЧАТКУ</span>
-                          <span className="value">{startDate ? new Date(startDate).toLocaleDateString('uk-UA') : 'дд.мм.рррр'}</span>
+                          <span className="value">{startDate ? new Date(startDate).toLocaleDateString('uk-UA') : 'Оберіть дату'}</span>
                         </div>
                         <div className="airbnb-date-divider"></div>
                         <div className="airbnb-date-seg">
                           <span className="label">ДАТА ЗАВЕРШЕННЯ</span>
-                          <span className="value">{endDate ? new Date(endDate).toLocaleDateString('uk-UA') : 'дд.мм.рррр'}</span>
+                          <span className="value">{endDate ? new Date(endDate).toLocaleDateString('uk-UA') : 'Оберіть дату'}</span>
                         </div>
                       </div>
 
-                      {bookingDetails && (
-                        <div className="booking-calculation">
-                          <div>Тривалість оренди: {bookingDetails.days} дн.</div>
-                          <div>Вартість оренди: {bookingDetails.rentalPrice} грн</div>
-                          <div>Застава (завдаток): {bookingDetails.deposit} грн</div>
-                          <div className="booking-total-row">
-                            <span>Разом до сплати:</span>
-                            <span>{bookingDetails.total} грн</span>
-                          </div>
-                        </div>
-                      )}
+                      {isCalendarOpen && (
+                        <>
+                          <div className="calendar-dropdown-overlay" onClick={() => setIsCalendarOpen(false)} />
+                          <div className="calendar-dropdown-content" onClick={(e) => e.stopPropagation()}>
+                            <div className="calendar-modal-header" style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                              <div className="calendar-nights-info" style={{ textAlign: 'left' }}>
+                                {calculateSelectedNights() > 0 ? (
+                                  <>
+                                    <h2 style={{ margin: '0 0 4px 0', fontSize: '22px', fontWeight: 700 }}>
+                                      {(() => {
+                                        const n = calculateSelectedNights();
+                                        if (n % 10 === 1 && n % 100 !== 11) return `${n} доба`;
+                                        if ([2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100)) return `${n} доби`;
+                                        return `${n} діб`;
+                                      })()}
+                                    </h2>
+                                    <p style={{ margin: 0, fontSize: '13px', color: '#717171' }}>
+                                      {formatCalendarDate(startDate)} — {formatCalendarDate(endDate)}
+                                    </p>
+                                  </>
+                                ) : (
+                                  <>
+                                    <h2 style={{ margin: '0 0 4px 0', fontSize: '22px', fontWeight: 700 }}>Оберіть дати</h2>
+                                    <p style={{ margin: 0, fontSize: '13px', color: '#717171' }}>Вкажіть період оренди</p>
+                                  </>
+                                )}
+                              </div>
 
-                      <button 
-                        type="submit" 
-                        className="primary" 
-                        style={{ width: '100%', marginTop: '15px' }}
-                      >
-                        {selectedListing.instantBooking ? (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-                              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                            </svg>
-                            Забронювати миттєво
-                          </span>
-                        ) : (
-                          'Надіслати запит на оренду'
-                        )}
-                      </button>
-                    </form>
-                  )}
-                </div>
+                              <div style={{ width: '280px' }}>
+                                <div className="calendar-inputs-double-box">
+                                  <div 
+                                    className={`calendar-input-segment ${(!startDate || (startDate && endDate)) ? 'active' : ''}`}
+                                    onClick={() => {
+                                      setStartDate('');
+                                      setEndDate('');
+                                    }}
+                                  >
+                                    <span className="label">ПРИБУТТЯ</span>
+                                    <div className="value-row">
+                                      <span className="value" style={{ color: startDate ? '#222' : '#717171' }}>
+                                        {startDate ? formatCalendarDate(startDate) : 'дд.мм.рррр'}
+                                      </span>
+                                      {startDate && (
+                                        <button 
+                                          type="button" 
+                                          className="clear-date-icon"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            setStartDate('');
+                                            setEndDate('');
+                                            setHoverDate(null);
+                                          }}
+                                        >
+                                          ×
+                                        </button>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <div 
+                                    className={`calendar-input-segment ${(startDate && !endDate) ? 'active' : ''}`}
+                                    onClick={() => {
+                                      if (startDate) {
+                                        setEndDate('');
+                                      }
+                                    }}
+                                  >
+                                    <span className="label">ВИЇЗД</span>
+                                    <div className="value-row">
+                                      <span className="value" style={{ color: endDate ? '#222' : '#717171' }}>
+                                        {endDate ? formatCalendarDate(endDate) : 'дд.мм.рррр'}
+                                      </span>
+                                      {endDate && (
+                                        <button 
+                                          type="button" 
+                                          className="clear-date-icon"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            setEndDate('');
+                                            setHoverDate(null);
+                                          }}
+                                        >
+                                          ×
+                                        </button>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="calendar-grid-container" style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+                              {isMobileView ? (
+                                renderMonthView(calendarMonth, true, true)
+                              ) : (
+                                <>
+                                  {renderMonthView(calendarMonth, true, false)}
+                                  {renderMonthView(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 1), false, true)}
+                                </>
+                              )}
+                            </div>
+
+                            <div className="calendar-modal-footer" style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #ebebeb', paddingTop: '12px' }}>
+                              <div>
+                                {(startDate || endDate) && (
+                                  <button 
+                                    type="button" 
+                                    className="calendar-clear-btn"
+                                    onClick={() => {
+                                      setStartDate('');
+                                      setEndDate('');
+                                      setHoverDate(null);
+                                    }}
+                                    style={{ padding: 0 }}
+                                  >
+                                    Очистити дати
+                                  </button>
+                                )}
+                              </div>
+                              <button 
+                                type="button" 
+                                className="calendar-close-btn"
+                                onClick={() => setIsCalendarOpen(false)}
+                                style={{ borderRadius: '24px', padding: '8px 16px', backgroundColor: '#222222', color: '#ffffff', border: 'none', fontWeight: 600, cursor: 'pointer' }}
+                              >
+                                Закрити
+                              </button>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+
+                    {bookingDetails && (
+                      <div className="booking-calculation">
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span>{selectedListing.price} грн x {bookingDetails.days} діб</span>
+                          <span>{bookingDetails.rentalPrice} грн</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span>Застава (завдаток)</span>
+                          <span>{bookingDetails.deposit} грн</span>
+                        </div>
+                        <div className="booking-total-row">
+                          <span>Разом</span>
+                          <span>{bookingDetails.total} грн</span>
+                        </div>
+                      </div>
+                    )}
+
+                    <button 
+                      type="submit" 
+                      className="primary" 
+                      style={{ width: '100%', marginTop: '15px', padding: '14px', fontSize: '16px', fontWeight: 700 }}
+                      disabled={loading}
+                    >
+                      {loading ? 'Обробка...' : (selectedListing.instantBooking ? (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                          </svg>
+                          Забронювати миттєво
+                        </span>
+                      ) : (
+                        'Надіслати запит на оренду'
+                      ))}
+                    </button>
+                  </form>
+                )}
               </div>
             </div>
+          </div>
+
+          {/* Reviews Section */}
+          <div className="reviews-section" style={{ marginTop: '48px', borderTop: '1px solid #ebebeb', paddingTop: '48px' }}>
+            <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '32px', fontSize: '22px', fontWeight: 700 }}>
+              <span style={{ color: '#ffc107' }}>★</span>
+              <span>
+                {(() => {
+                  if (selectedListing.avgRating !== null && selectedListing.avgRating !== undefined) {
+                    const rCount = selectedListing.reviewCount || 0;
+                    const declension = rCount % 10 === 1 && rCount % 100 !== 11
+                      ? 'відгук'
+                      : [2, 3, 4].includes(rCount % 10) && ![12, 13, 14].includes(rCount % 100)
+                      ? 'відгуки'
+                      : 'відгуків';
+                    return `${selectedListing.avgRating} • ${rCount} ${declension}`;
+                  }
+                  return 'Немає відгуків (Нове)';
+                })()}
+              </span>
+            </h3>
+
+            {/* Ratings Dashboard Progress Bars (only if reviews exist) */}
+            {selectedListing.reviews && selectedListing.reviews.length > 0 && (
+              <div className="reviews-dashboard">
+                {[
+                  { label: 'Точність опису', score: (selectedListing.avgRating || 5.0) },
+                  { label: 'Спілкування', score: selectedListing.avgRating ? Math.min(5.0, selectedListing.avgRating + 0.1) : 5.0 },
+                  { label: 'Чистота речі', score: selectedListing.avgRating ? Math.max(4.0, selectedListing.avgRating - 0.1) : 5.0 },
+                  { label: 'Зручність отримання', score: (selectedListing.avgRating || 5.0) },
+                  { label: 'Розташування', score: 5.0 },
+                  { label: 'Співвідношення ціна/якість', score: (selectedListing.avgRating || 5.0) }
+                ].map((item, idx) => (
+                  <div key={idx} className="review-metric-row">
+                    <span className="review-metric-label">{item.label}</span>
+                    <div className="review-metric-progress-container">
+                      <div className="metric-bar-bg">
+                        <div className="metric-bar-fill" style={{ width: `${(item.score / 5.0) * 100}%` }}></div>
+                      </div>
+                      <span className="review-metric-score">{item.score.toFixed(1)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Reviews list */}
+            {selectedListing.reviews && selectedListing.reviews.length > 0 ? (
+              <div className="reviews-list-grid">
+                {selectedListing.reviews.map((rev: any) => (
+                  <div key={rev.id} className="review-card">
+                    <div className="review-card-header">
+                      <div className="review-card-avatar">
+                        {rev.user?.firstName ? rev.user.firstName.charAt(0).toUpperCase() : 'U'}
+                      </div>
+                      <div>
+                        <h4 className="review-card-name">
+                          {rev.user ? `${rev.user.firstName || ''} ${rev.user.lastName || ''}`.trim() || rev.user.email : 'Користувач'}
+                        </h4>
+                        <p className="review-card-date">
+                          {new Date(rev.createdAt).toLocaleDateString('uk-UA', { year: 'numeric', month: 'long' })}
+                        </p>
+                      </div>
+                      <div className="review-card-rating">
+                        {'★'.repeat(rev.rating)}{'☆'.repeat(5 - rev.rating)}
+                      </div>
+                    </div>
+                    <p className="review-card-comment">
+                      {rev.comment}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p style={{ color: '#717171', fontSize: '16px', marginBottom: '40px' }}>
+                Для цієї речі ще немає відгуків. Будьте першим, хто орендує та оцінить її!
+              </p>
+            )}
+
+            {/* Leave a review form */}
+            {currentUser && currentUser.id !== selectedListing.userId && 
+             selectedListing.bookings?.some((b: any) => b.tenantId === currentUser.id && ['CONFIRMED', 'COMPLETED'].includes(b.status)) &&
+             !selectedListing.reviews?.some((r: any) => r.userId === currentUser.id) && (
+              <div className="add-review-box" style={{ 
+                backgroundColor: '#f7f7f7', 
+                borderRadius: '12px', 
+                padding: '24px', 
+                border: '1px solid #ebebeb',
+                marginTop: '32px'
+              }}>
+                <h4 style={{ margin: '0 0 16px 0', fontSize: '16px', fontWeight: 700 }}>Залишити відгук про річ</h4>
+                
+                <form onSubmit={handleReviewSubmit}>
+                  <div style={{ marginBottom: '16px' }}>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', marginBottom: '8px', color: '#222', letterSpacing: '0.5px' }}>
+                      ВАША ОЦІНКА *
+                    </label>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      {[1, 2, 3, 4, 5].map((star) => {
+                        const isFilled = star <= (reviewHoverRating || reviewRating);
+                        return (
+                          <span
+                            key={star}
+                            onClick={() => setReviewRating(star)}
+                            onMouseEnter={() => setReviewHoverRating(star)}
+                            onMouseLeave={() => setReviewHoverRating(0)}
+                            style={{
+                              fontSize: '32px',
+                              cursor: 'pointer',
+                              color: isFilled ? '#ffc107' : '#dddddd',
+                              transition: 'color 0.15s, transform 0.1s',
+                              display: 'inline-block'
+                            }}
+                            className="star-icon"
+                          >
+                            ★
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: '16px' }}>
+                    <label htmlFor="review-comment" style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', marginBottom: '8px', color: '#222', letterSpacing: '0.5px' }}>
+                      ВАШ КОМЕНТАР *
+                    </label>
+                    <textarea
+                      id="review-comment"
+                      required
+                      rows={4}
+                      value={reviewComment}
+                      onChange={(e) => setReviewComment(e.target.value)}
+                      placeholder="Поділіться враженнями від оренди цієї речі (стан, якість, робота з власником)..."
+                      style={{ 
+                        width: '100%', 
+                        borderRadius: '8px', 
+                        border: '1px solid #b0b0b0', 
+                        padding: '12px',
+                        fontSize: '14px',
+                        backgroundColor: '#ffffff',
+                        lineHeight: '1.4'
+                      }}
+                    />
+                  </div>
+
+                  <button 
+                    type="submit" 
+                    className="primary" 
+                    disabled={loading || reviewRating === 0}
+                    style={{ width: 'auto', padding: '10px 24px', fontSize: '14px' }}
+                  >
+                    {loading ? 'Надсилання...' : 'Надіслати відгук'}
+                  </button>
+                </form>
+              </div>
+            )}
           </div>
         </section>
       )}
@@ -2645,8 +3446,8 @@ function App() {
                 />
               </div>
 
-              <button type="submit" className="primary" style={{ width: '100%', marginTop: '10px' }}>
-                {authMode === 'login' ? 'Увійти' : 'Зареєструватися'}
+              <button type="submit" className="primary" style={{ width: '100%', marginTop: '10px' }} disabled={loading}>
+                {loading ? 'Завантаження...' : (authMode === 'login' ? 'Увійти' : 'Зареєструватися')}
               </button>
             </form>
 
@@ -2754,19 +3555,130 @@ function App() {
                 />
               </div>
 
-              <div className="form-group">
-                <label htmlFor="edit-image">Фотографія речі (залиште порожнім, щоб зберегти поточне)</label>
-                <input 
-                  type="file" 
-                  id="edit-image"
-                  accept="image/*"
-                  onChange={handleEditImageChange}
-                />
-                {editImagePreview && (
-                  <div className="image-preview-box" style={{ marginTop: '10px' }}>
-                    <img src={editImagePreview} alt="Попередній перегляд" className="image-preview-img" style={{ maxWidth: '100%', height: '140px', objectFit: 'cover', borderRadius: '8px' }} />
+            <div className="form-group">
+              <label style={{ fontWeight: 600, display: 'block', marginBottom: '8px' }}>Фотографії речі</label>
+              
+              {!shouldReplaceImages ? (
+                <div>
+                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '10px' }}>
+                    {editImagePreviews.map((url, index) => (
+                      <div key={index} style={{ width: '80px', height: '80px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #ccc' }}>
+                        <img src={url} alt={`Поточне фото ${index + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      </div>
+                    ))}
                   </div>
-                )}
+                  <button 
+                    type="button" 
+                    className="btn btn-outline" 
+                    onClick={() => {
+                      setShouldReplaceImages(true);
+                      setEditImageFiles([]);
+                      setEditImagePreviews([]);
+                    }}
+                    style={{ fontSize: '13px', padding: '6px 12px', border: '1px solid #ccc', borderRadius: '6px', background: '#fff', cursor: 'pointer' }}
+                  >
+                    Замінити всі фотографії
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '13px', color: '#666' }}>Завантажте від 2 до 3 нових обов'язкових фото:</span>
+                    <button 
+                      type="button" 
+                      onClick={() => {
+                        setShouldReplaceImages(false);
+                        setEditImageFiles([]);
+                        setEditImagePreviews(editingListing?.imageUrls || []);
+                      }}
+                      style={{ fontSize: '12px', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', padding: 0, color: '#666' }}
+                    >
+                      Скасувати заміну
+                    </button>
+                  </div>
+                  <input 
+                    type="file" 
+                    id="edit-image"
+                    accept="image/*"
+                    multiple
+                    onChange={handleEditImageChange}
+                    disabled={editImageFiles.length >= 3}
+                  />
+                  {editImagePreviews.length > 0 && (
+                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '10px' }}>
+                      {editImagePreviews.map((url, index) => (
+                        <div key={index} style={{ position: 'relative', width: '80px', height: '80px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #ccc' }}>
+                          <img src={url} alt={`Нове фото ${index + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <button 
+                            type="button"
+                            onClick={() => handleRemoveEditImage(index)}
+                            style={{
+                              position: 'absolute',
+                              top: '2px',
+                              right: '2px',
+                              width: '18px',
+                              height: '18px',
+                              borderRadius: '50%',
+                              backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                              color: '#fff',
+                              border: 'none',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: '11px',
+                              padding: 0
+                            }}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {editImageFiles.length < 2 && (
+                    <span style={{ color: '#ff385c', fontSize: '12px', marginTop: '5px', display: 'block' }}>
+                      Потрібно завантажити щонайменше 2 фотографії (зараз: {editImageFiles.length})
+                    </span>
+                  )}
+                  {editImageFiles.length > 0 && (
+                    <span style={{ color: '#666', fontSize: '12px', marginTop: '5px', display: 'block' }}>
+                      Вибрано {editImageFiles.length} з 3 фотографій
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+
+              <div style={{ display: 'flex', gap: '15px', margin: '15px 0' }}>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label htmlFor="editCheckInTime">Час отримання (Check-in)</label>
+                  <select 
+                    id="editCheckInTime"
+                    value={editCheckInTime}
+                    onChange={(e) => setEditCheckInTime(e.target.value)}
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ccc' }}
+                  >
+                    {Array.from({ length: 24 }).map((_, h) => {
+                      const time = `${String(h).padStart(2, '0')}:00`;
+                      return <option key={time} value={time}>{time}</option>;
+                    })}
+                  </select>
+                </div>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label htmlFor="editCheckOutTime">Час повернення (Check-out)</label>
+                  <select 
+                    id="editCheckOutTime"
+                    value={editCheckOutTime}
+                    onChange={(e) => setEditCheckOutTime(e.target.value)}
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ccc' }}
+                  >
+                    {Array.from({ length: 24 }).map((_, h) => {
+                      const time = `${String(h).padStart(2, '0')}:00`;
+                      return <option key={time} value={time}>{time}</option>;
+                    })}
+                  </select>
+                </div>
               </div>
 
               <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '15px 0' }}>
@@ -2782,81 +3694,41 @@ function App() {
                 </label>
               </div>
 
-              <button type="submit" className="primary" style={{ width: '100%', marginTop: '10px' }}>
-                Зберегти зміни
+              <button type="submit" className="primary" style={{ width: '100%', marginTop: '10px' }} disabled={loading}>
+                {loading ? 'Збереження...' : 'Зберегти зміни'}
               </button>
             </form>
           </div>
         </div>
       )}
 
-      {/* МОДАЛЬНЕ ВІКНО: Кастомний інтерактивний календар Airbnb */}
-      {isCalendarOpen && (
-        <div className="calendar-modal-overlay" onClick={() => setIsCalendarOpen(false)}>
-          <div className="calendar-modal-content" onClick={(e) => e.stopPropagation()}>
-            
-            <div className="calendar-modal-header">
-              <div className="calendar-nights-info">
-                {calculateSelectedNights() > 0 ? (
-                  <>
-                    <h2>
-                      {(() => {
-                        const n = calculateSelectedNights();
-                        if (n % 10 === 1 && n % 100 !== 11) return `${n} доба`;
-                        if ([2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100)) return `${n} доби`;
-                        return `${n} діб`;
-                      })()}
-                    </h2>
-                    <p>{formatCalendarDate(startDate)} — {formatCalendarDate(endDate)}</p>
-                  </>
-                ) : (
-                  <>
-                    <h2>Оберіть дати оренди</h2>
-                    <p>Додайте дати отримання та повернення для розрахунку ціни</p>
-                  </>
-                )}
-              </div>
 
-              <div className="calendar-inputs-box">
-                <div className="calendar-input-seg">
-                  <span className="label">Прибуття</span>
-                  <span className="value">{startDate ? formatCalendarDate(startDate) : 'дд.мм.рррр'}</span>
-                </div>
-                <div className="calendar-input-seg">
-                  <span className="label">Виїзд</span>
-                  <span className="value">{endDate ? formatCalendarDate(endDate) : 'дд.мм.рррр'}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="calendar-grid-container">
-              {renderMonthView(calendarMonth, true, false)}
-              {renderMonthView(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 1), false, true)}
-            </div>
-
-            <div className="calendar-modal-footer">
-              {(startDate || endDate) && (
+      {/* МОДАЛЬНЕ ВІКНО: Слайдер фотографій (Lightbox) */}
+      {isLightboxOpen && selectedListing && (
+        <div className="lightbox-modal" onClick={() => setIsLightboxOpen(false)}>
+          <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
+            <button className="lightbox-close-btn" onClick={() => setIsLightboxOpen(false)}>×</button>
+            <img 
+              src={getGalleryPhotos(selectedListing)[lightboxPhotoIndex]} 
+              alt={`${selectedListing.title} full view ${lightboxPhotoIndex}`} 
+              className="lightbox-img"
+            />
+            {getGalleryPhotos(selectedListing).length > 1 && (
+              <>
                 <button 
-                  type="button" 
-                  className="calendar-clear-btn"
-                  onClick={() => {
-                    setStartDate('');
-                    setEndDate('');
-                    setHoverDate(null);
-                  }}
+                  className="lightbox-nav-btn prev" 
+                  onClick={() => setLightboxPhotoIndex((prev) => (prev === 0 ? getGalleryPhotos(selectedListing).length - 1 : prev - 1))}
                 >
-                  Очистити дати
+                  ‹
                 </button>
-              )}
-              <button 
-                type="button" 
-                className="calendar-close-btn"
-                onClick={() => setIsCalendarOpen(false)}
-              >
-                Закрити
-              </button>
-            </div>
-
+                <button 
+                  className="lightbox-nav-btn next" 
+                  onClick={() => setLightboxPhotoIndex((prev) => (prev === getGalleryPhotos(selectedListing).length - 1 ? 0 : prev + 1))}
+                >
+                  ›
+                </button>
+              </>
+            )}
           </div>
         </div>
       )}

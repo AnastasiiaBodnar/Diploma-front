@@ -25,6 +25,10 @@
   --pending-bg: #fff9f0;
   --pending-border: #ffe3b3;
   
+  --completed-color: #004085;
+  --completed-bg: #cce5ff;
+  --completed-border: #b8daff;
+  
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 1.43;
@@ -45,12 +49,20 @@ body {
 }
 
 #root {
+  width: 100%;
   max-width: 1440px;
   margin: 0 auto;
   padding: 24px;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+.app-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
 h1, h2, h3, h4 {
@@ -227,4 +239,10 @@ label {
   border-color: var(--border-color);
   background-color: var(--bg-light);
   color: var(--text-muted);
+}
+
+.status-completed {
+  border-color: var(--completed-border);
+  background-color: var(--completed-bg);
+  color: var(--completed-color);
 }

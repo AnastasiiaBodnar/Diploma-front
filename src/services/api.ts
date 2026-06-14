@@ -176,7 +176,7 @@ export const bookingAPI = {
     return handleResponse(res);
   },
 
-  async updateBookingStatus(id: number, status: 'CONFIRMED' | 'REJECTED' | 'CANCELLED', reason?: string) {
+  async updateBookingStatus(id: number, status: 'CONFIRMED' | 'REJECTED' | 'CANCELLED' | 'COMPLETED', reason?: string) {
     const res = await fetch(`${API_BASE_URL}/bookings/${id}/status`, {
       method: 'PATCH',
       headers: getHeaders(),
