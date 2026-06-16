@@ -108,17 +108,13 @@ export default function BrowseMap({ listings, onListingSelect, selectedListing, 
 
       const isSelected = selectedListing?.id === listing.id;
 
-      // Перевіряємо, чи є підтверджене бронювання (оренда)
-      const isRented = listing.bookings?.some(b => b.status === 'CONFIRMED') || false;
-
       // Обрізаємо назву речі, щоб мітка залишалася компактною
       const displayTitle = listing.title.length > 12 ? listing.title.slice(0, 12) + '...' : listing.title;
 
-      // Створення кастомного маркера-пігулки з назвою, ціною та галочкою, якщо орендовано
+      // Створення кастомного маркера-пігулки з назвою, ціною
       const priceIcon = L.divIcon({
         html: `
-          <div class="map-price-marker ${isSelected ? 'selected' : ''} ${isRented ? 'rented' : ''}">
-            ${isRented ? '<span class="marker-checkmark">✓</span> ' : ''}
+          <div class="map-price-marker ${isSelected ? 'selected' : ''}">
             <span class="marker-title-pill">${displayTitle}</span> • ${listing.price} ₴
           </div>
         `,
@@ -130,7 +126,7 @@ export default function BrowseMap({ listings, onListingSelect, selectedListing, 
 
       const marker = L.marker([lat, lng], { icon: priceIcon }).addTo(map);
 
-      // Гарне спливаюче вікно з прев'ю товару/житла та міткою оренди
+      // Гарне спливаюче вікно з прев'ю товару/житла
       const popupContent = document.createElement('div');
       popupContent.className = 'map-popup-card';
       popupContent.innerHTML = `
@@ -140,7 +136,6 @@ export default function BrowseMap({ listings, onListingSelect, selectedListing, 
         <div class="map-popup-price-row">
           <span class="map-popup-price">
             ${listing.price} ₴ <span class="map-popup-price-unit">/ добу</span>
-            ${isRented ? '<span class="map-popup-rented-badge">✓ Орендовано</span>' : ''}
           </span>
           <button class="map-popup-btn" id="popup-btn-${listing.id}">Переглянути</button>
         </div>

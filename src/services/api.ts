@@ -224,3 +224,22 @@ export const reviewAPI = {
     return handleResponse(res);
   }
 };
+
+export const favoriteAPI = {
+  async toggleFavorite(listingId: number) {
+    const res = await fetch(`${API_BASE_URL}/favorites/toggle`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ listingId }),
+    });
+    return handleResponse(res);
+  },
+
+  async getFavorites() {
+    const res = await fetch(`${API_BASE_URL}/favorites`, {
+      method: 'GET',
+      headers: getHeaders(),
+    });
+    return handleResponse(res);
+  }
+};

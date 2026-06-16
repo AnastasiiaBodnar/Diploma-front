@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
-import { authAPI, categoryAPI, listingAPI, bookingAPI, notificationAPI, reviewAPI } from './services/api';
+import { authAPI, categoryAPI, listingAPI, bookingAPI, notificationAPI, reviewAPI, favoriteAPI } from './services/api';
 import type { ListingFilters } from './services/api';
 import BrowseMap from './components/BrowseMap';
 import MapSelector from './components/MapSelector';
@@ -80,7 +80,7 @@ interface Notification {
   createdAt: string;
 }
 
-type ViewType = 'listings' | 'create' | 'rentals' | 'requests' | 'mylistings';
+type ViewType = 'listings' | 'create' | 'rentals' | 'requests' | 'mylistings' | 'favorites';
 type AuthMode = 'login' | 'register';
 
 const POPULAR_UKRAINIAN_LOCATIONS = [
@@ -468,6 +468,70 @@ function App() {
   const [isLightboxOpen, setIsLightboxOpen] = useState<boolean>(false);
   const [lightboxPhotoIndex, setLightboxPhotoIndex] = useState<number>(0);
   const [isMobileView, setIsMobileView] = useState<boolean>(window.innerWidth <= 768);
+
+  // Обране (Збережені оголошення)
+  const [savedListingIds, setSavedListingIds] = useState<number[]>([]);
+  const [favoriteListings, setFavoriteListings] = useState<Listing[]>([]);
+
+  const handleGuestAction = () => {
+    setAuthMode('login');
+    setIsAuthOpen(true);
+  };
+
+  const loadFavoritesList = async (showLoading = false) => {
+    if (!currentUser) return;
+    if (showLoading) setLoading(true);
+    try {
+      const items = await favoriteAPI.getFavorites();
+      setFavoriteListings(items);
+      setSavedListingIds(items.map((item: any) => item.id));
+    } catch (err: any) {
+      console.error('Failed to load favorites list', err);
+      if (showLoading) setErrorMsg(err.message || 'Не вдалося завантажити обрані оголошення');
+    } finally {
+      if (showLoading) setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (currentUser) {
+      loadFavoritesList();
+    } else {
+      setSavedListingIds([]);
+      setFavoriteListings([]);
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (activeView === 'favorites' && currentUser) {
+      loadFavoritesList(true);
+    }
+  }, [activeView]);
+
+  const toggleSaveListing = async (id: number) => {
+    if (!currentUser) {
+      handleGuestAction();
+      return;
+    }
+    
+    // Optimistic UI update
+    const isCurrentlySaved = savedListingIds.includes(id);
+    setSavedListingIds(prev => 
+      isCurrentlySaved ? prev.filter(item => item !== id) : [...prev, id]
+    );
+    
+    try {
+      const res = await favoriteAPI.toggleFavorite(id);
+      setSuccessMsg(res.message);
+      loadFavoritesList();
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Не вдалося змінити список обраного');
+      // Rollback
+      setSavedListingIds(prev => 
+        isCurrentlySaved ? [...prev, id] : prev.filter(item => item !== id)
+      );
+    }
+  };
 
   useEffect(() => {
     const handleResize = () => setIsMobileView(window.innerWidth <= 768);
@@ -1520,7 +1584,7 @@ function App() {
           style={{
             fontSize: '24px',
             fontWeight: 800,
-            color: '#FF385C',
+            color: '#10B981',
             cursor: 'pointer',
             letterSpacing: '-0.8px',
             userSelect: 'none'
@@ -1703,7 +1767,7 @@ function App() {
                   <button 
                     type="submit"
                     style={{
-                      background: '#FF385C',
+                      background: '#10B981',
                       border: 'none',
                       color: '#ffffff',
                       fontWeight: 700,
@@ -1717,8 +1781,8 @@ function App() {
                       whiteSpace: 'nowrap',
                       boxShadow: '0 1px 2px rgba(0,0,0,0.08)'
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#E61E4D'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FF385C'}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#059669'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#10B981'}
                   >
                     <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="presentation" focusable="false" style={{ display: 'block', fill: 'none', height: '14px', width: '14px', stroke: 'currentColor', strokeWidth: 4, overflow: 'visible' }}>
                       <g fill="none">
@@ -1794,7 +1858,7 @@ function App() {
                       position: 'absolute',
                       top: '2px',
                       right: '2px',
-                      backgroundColor: '#FF385C',
+                      backgroundColor: '#10B981',
                       color: '#ffffff',
                       fontSize: '10px',
                       fontWeight: 700,
@@ -1846,7 +1910,7 @@ function App() {
                           style={{
                             background: 'none',
                             border: 'none',
-                            color: '#FF385C',
+                            color: '#10B981',
                             fontSize: '12px',
                             fontWeight: 600,
                             cursor: 'pointer',
@@ -1907,7 +1971,7 @@ function App() {
                                 <span style={{
                                   width: '6px',
                                   height: '6px',
-                                  backgroundColor: '#FF385C',
+                                  backgroundColor: '#10B981',
                                   borderRadius: '50%',
                                   display: 'inline-block'
                                 }} />
@@ -1922,6 +1986,70 @@ function App() {
               </div>
             </>
           )}
+
+          {/* Кнопка "Обране" (Сердечко) */}
+          <button 
+            onClick={() => {
+              if (currentUser) {
+                setActiveView('favorites');
+                setSelectedListing(null);
+              } else {
+                handleGuestAction();
+              }
+            }}
+            style={{
+              background: 'none',
+              border: 'none',
+              width: '38px',
+              height: '38px',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              color: activeView === 'favorites' ? '#10B981' : '#222222',
+              transition: 'background-color 0.2s',
+              position: 'relative',
+              marginRight: '4px',
+              padding: '0'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f7f7f7'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+            title="Обране"
+          >
+            <svg 
+              viewBox="0 0 24 24" 
+              xmlns="http://www.w3.org/2000/svg" 
+              aria-hidden="true" 
+              role="presentation" 
+              focusable="false" 
+              style={{ display: 'block', fill: activeView === 'favorites' ? '#10B981' : 'none', height: '20px', width: '20px', stroke: 'currentColor', strokeWidth: 2, overflow: 'visible' }}
+            >
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+            </svg>
+            {savedListingIds.length > 0 && (
+              <span style={{
+                position: 'absolute',
+                top: '2px',
+                right: '2px',
+                backgroundColor: '#10B981',
+                color: '#ffffff',
+                fontSize: '10px',
+                fontWeight: 700,
+                borderRadius: '50%',
+                padding: '2px 6px',
+                minWidth: '18px',
+                height: '18px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '2px solid #ffffff',
+                boxSizing: 'border-box'
+              }}>
+                {savedListingIds.length}
+              </span>
+            )}
+          </button>
 
           {/* Контейнер випадаючого меню профілю */}
           <div className="profile-menu-container" style={{ position: 'relative' }}>
@@ -2023,9 +2151,17 @@ function App() {
                     >
                       Запити на оренду
                     </button>
+                     <button 
+                      onClick={() => { setActiveView('favorites'); setSelectedListing(null); }}
+                      style={{ background: 'none', border: 'none', padding: '10px 16px', fontSize: '13px', textAlign: 'left', width: '100%', cursor: 'pointer', fontWeight: 500 }}
+                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f7f7f7'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                    >
+                      Обране
+                    </button>
                     <button 
                       onClick={handleLogout}
-                      style={{ background: 'none', border: 'none', padding: '10px 16px', fontSize: '13px', textAlign: 'left', width: '100%', cursor: 'pointer', fontWeight: 500, color: '#FF385C', borderTop: '1px solid #f0f0f0', marginTop: '4px' }}
+                      style={{ background: 'none', border: 'none', padding: '10px 16px', fontSize: '13px', textAlign: 'left', width: '100%', cursor: 'pointer', fontWeight: 500, color: '#10B981', borderTop: '1px solid #f0f0f0', marginTop: '4px' }}
                       onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f7f7f7'; }}
                       onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                     >
@@ -2049,6 +2185,16 @@ function App() {
                       onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                     >
                       Зареєструватися
+                    </button>
+                     <button 
+                      onClick={() => {
+                        handleGuestAction();
+                      }}
+                      style={{ background: 'none', border: 'none', padding: '10px 16px', fontSize: '13px', textAlign: 'left', width: '100%', cursor: 'pointer', fontWeight: 500, borderTop: '1px solid #f0f0f0', marginTop: '4px' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f7f7f7'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                    >
+                      Обране
                     </button>
                   </>
                 )}
@@ -2088,8 +2234,8 @@ function App() {
               border: 'none',
               padding: '4px 0 10px',
               cursor: 'pointer',
-              color: selectedCategory === '' ? '#FF385C' : '#717171',
-              borderBottom: selectedCategory === '' ? '2px solid #FF385C' : '2px solid transparent',
+              color: selectedCategory === '' ? '#10B981' : '#717171',
+              borderBottom: selectedCategory === '' ? '2px solid #10B981' : '2px solid transparent',
               minWidth: '64px',
               transition: 'color 0.2s, border-bottom-color 0.2s',
               borderRadius: 0
@@ -2121,8 +2267,8 @@ function App() {
                   border: 'none',
                   padding: '4px 0 10px',
                   cursor: 'pointer',
-                  color: isSelected ? '#FF385C' : '#717171',
-                  borderBottom: isSelected ? '2px solid #FF385C' : '2px solid transparent',
+                  color: isSelected ? '#10B981' : '#717171',
+                  borderBottom: isSelected ? '2px solid #10B981' : '2px solid transparent',
                   minWidth: '64px',
                   transition: 'color 0.2s, border-bottom-color 0.2s',
                   borderRadius: 0
@@ -2168,6 +2314,42 @@ function App() {
                         window.open(`/?listing=${item.id}`, '_blank');
                       }}
                     >
+                      <button 
+                        className="card-favorite-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleSaveListing(item.id);
+                        }}
+                        style={{
+                          position: 'absolute',
+                          top: '12px',
+                          right: '12px',
+                          background: 'rgba(255, 255, 255, 0.9)',
+                          border: 'none',
+                          borderRadius: '50%',
+                          width: '32px',
+                          height: '32px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                          zIndex: 10,
+                          transition: 'transform 0.15s ease',
+                          padding: '0'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1.0)'}
+                        title="Зберегти"
+                      >
+                        <svg viewBox="0 0 24 24" width="18" height="18" 
+                          fill={savedListingIds.includes(item.id) ? '#10B981' : 'none'} 
+                          stroke={savedListingIds.includes(item.id) ? '#10B981' : '#222222'} 
+                          strokeWidth="2.5"
+                        >
+                          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                        </svg>
+                      </button>
                       {item.imageUrls?.[0] || item.imageUrl ? (
                         <img src={item.imageUrls?.[0] || item.imageUrl || ''} alt={item.title} className="listing-card-image" />
                       ) : (
@@ -2207,6 +2389,42 @@ function App() {
                             window.open(`/?listing=${item.id}`, '_blank');
                           }}
                         >
+                          <button 
+                            className="card-favorite-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleSaveListing(item.id);
+                            }}
+                            style={{
+                              position: 'absolute',
+                              top: '12px',
+                              right: '12px',
+                              background: 'rgba(255, 255, 255, 0.9)',
+                              border: 'none',
+                              borderRadius: '50%',
+                              width: '32px',
+                              height: '32px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                              zIndex: 10,
+                              transition: 'transform 0.15s ease',
+                              padding: '0'
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1.0)'}
+                            title="Зберегти"
+                          >
+                            <svg viewBox="0 0 24 24" width="18" height="18" 
+                              fill={savedListingIds.includes(item.id) ? '#10B981' : 'none'} 
+                              stroke={savedListingIds.includes(item.id) ? '#10B981' : '#222222'} 
+                              strokeWidth="2.5"
+                            >
+                              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                            </svg>
+                          </button>
                           {item.imageUrls?.[0] || item.imageUrl ? (
                             <img src={item.imageUrls?.[0] || item.imageUrl || ''} alt={item.title} className="listing-card-image" />
                           ) : (
@@ -2413,7 +2631,7 @@ function App() {
                 </div>
               )}
               {imageFiles.length < 2 && (
-                <span style={{ color: '#ff385c', fontSize: '12px', marginTop: '5px', display: 'block' }}>
+                <span style={{ color: '#10b981', fontSize: '12px', marginTop: '5px', display: 'block' }}>
                   Потрібно завантажити щонайменше 2 фотографії (вибрано: {imageFiles.length})
                 </span>
               )}
@@ -2473,6 +2691,99 @@ function App() {
             </button>
           </form>
         </section>
+      )}
+
+      {/* Вкладка: Обране (Збережені оголошення) */}
+      {activeView === 'favorites' && (
+        <div>
+          <h2>Збережені оголошення</h2>
+          <p className="text-muted" style={{ marginBottom: '24px' }}>
+            Тут відображаються оголошення, які ви зберегли в обране.
+          </p>
+
+          {favoriteListings.length === 0 ? (
+            <div style={{ textAlign: 'center', margin: '60px 0', color: '#717171' }}>
+              <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#b0b0b0" strokeWidth="1.5" style={{ display: 'block', margin: '0 auto 16px' }}>
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <p style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 8px' }}>Список обраного порожній</p>
+              <p style={{ fontSize: '14px', margin: 0 }}>Зберігайте речі, які вас зацікавили, щоб не загубити їх.</p>
+              <button 
+                className="primary" 
+                onClick={() => setActiveView('listings')} 
+                style={{ marginTop: '20px', borderRadius: '20px', padding: '10px 24px' }}
+              >
+                Перейти до оголошень
+              </button>
+            </div>
+          ) : (
+            <section className="listings-grid full-grid">
+              {favoriteListings.map(item => (
+                <div 
+                  key={item.id} 
+                  className="listing-card"
+                  onClick={() => {
+                    window.open(`/?listing=${item.id}`, '_blank');
+                  }}
+                  style={{ position: 'relative' }}
+                >
+                  <button 
+                    className="card-favorite-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleSaveListing(item.id);
+                    }}
+                    style={{
+                      position: 'absolute',
+                      top: '12px',
+                      right: '12px',
+                      background: 'rgba(255, 255, 255, 0.9)',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '32px',
+                      height: '32px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                      zIndex: 10,
+                      transition: 'transform 0.15s ease',
+                      padding: '0'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1.0)'}
+                    title="Зберегти"
+                  >
+                    <svg viewBox="0 0 24 24" width="18" height="18" 
+                      fill="#10B981" 
+                      stroke="#10B981" 
+                      strokeWidth="2.5"
+                    >
+                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                    </svg>
+                  </button>
+
+                  {item.imageUrls?.[0] || item.imageUrl ? (
+                    <img src={item.imageUrls?.[0] || item.imageUrl || ''} alt={item.title} className="listing-card-image" />
+                  ) : (
+                    <div className="listing-card-placeholder">Фото відсутнє</div>
+                  )}
+                  <div className="listing-card-title">{item.title}</div>
+                  <div className="listing-card-meta">
+                    {item.category?.name} • {item.location}
+                  </div>
+                  <div className="listing-card-price-row">
+                    <span className="listing-card-price">{item.price} грн</span>
+                    <span className="listing-card-rating">
+                      ★ {item.avgRating !== null && item.avgRating !== undefined ? `${item.avgRating} (${item.reviewCount})` : 'Нове'}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </section>
+          )}
+        </div>
       )}
 
       {/* Вкладка: Мої оренди (як орендар) */}
@@ -2781,13 +3092,25 @@ function App() {
                 </svg>{' '}
                 Поділитись
               </button>
-              <button className="listing-action-btn" onClick={() => {
-                setSuccessMsg('Збережено в обране!');
-              }}>
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style={{ display: 'inline-block', color: '#FF385C', verticalAlign: 'middle', marginRight: '4px' }}>
-                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                </svg>{' '}
-                Зберегти
+              <button 
+                className={`listing-action-btn ${savedListingIds.includes(selectedListing.id) ? 'saved' : ''}`} 
+                onClick={() => toggleSaveListing(selectedListing.id)}
+              >
+                {savedListingIds.includes(selectedListing.id) ? (
+                  <>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style={{ display: 'inline-block', color: '#10B981', verticalAlign: 'middle', marginRight: '4px' }}>
+                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                    </svg>{' '}
+                    Збережено
+                  </>
+                ) : (
+                  <>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: 'inline-block', color: '#222222', verticalAlign: 'middle', marginRight: '4px' }}>
+                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>{' '}
+                    Зберегти
+                  </>
+                )}
               </button>
             </div>
           </div>
@@ -2870,7 +3193,7 @@ function App() {
                 {selectedListing.user?.ownerAvgRating !== undefined && selectedListing.user?.ownerAvgRating !== null && selectedListing.user.ownerAvgRating >= 4.5 && (
                   <div className="highlight-item">
                     <div className="highlight-icon">
-                      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: '#FF385C' }}>
+                      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: '#10B981' }}>
                         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
@@ -3377,7 +3700,7 @@ function App() {
       {isAuthOpen && (
         <div className="modal-overlay" onClick={() => setIsAuthOpen(false)}>
           <div className="modal-content" style={{ maxWidth: '400px' }} onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close-btn" onClick={() => setIsAuthOpen(false)}>Закрити</button>
+            <button className="modal-close-btn" onClick={() => setIsAuthOpen(false)}>×</button>
             
             <div className="auth-tabs">
               <button 
@@ -3463,7 +3786,7 @@ function App() {
       {isEditOpen && editingListing && (
         <div className="modal-overlay" onClick={() => { setIsEditOpen(false); setEditingListing(null); }}>
           <div className="modal-content" style={{ maxWidth: '600px', overflowY: 'auto', maxHeight: '90vh' }} onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close-btn" onClick={() => { setIsEditOpen(false); setEditingListing(null); }}>Закрити</button>
+            <button className="modal-close-btn" onClick={() => { setIsEditOpen(false); setEditingListing(null); }}>×</button>
             
             <h2>Редагувати оголошення</h2>
             <form onSubmit={handleEditListingSubmit} style={{ marginTop: '20px' }}>
@@ -3637,7 +3960,7 @@ function App() {
                     </div>
                   )}
                   {editImageFiles.length < 2 && (
-                    <span style={{ color: '#ff385c', fontSize: '12px', marginTop: '5px', display: 'block' }}>
+                    <span style={{ color: '#10b981', fontSize: '12px', marginTop: '5px', display: 'block' }}>
                       Потрібно завантажити щонайменше 2 фотографії (зараз: {editImageFiles.length})
                     </span>
                   )}
