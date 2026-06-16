@@ -51,6 +51,7 @@ interface Listing {
   bookings?: any[];
   checkInTime?: string;
   checkOutTime?: string;
+  brokenUntil?: string | null;
 }
 
 interface Booking {
@@ -425,6 +426,15 @@ function App() {
 
   // Сповіщення (Notification Bell)
   const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  // Стан для модального вікна повідомлення про поломку (Ремонт)
+  const [isRepairModalOpen, setIsRepairModalOpen] = useState<boolean>(false);
+  const [repairListingId, setRepairListingId] = useState<number | null>(null);
+  const [repairUntilDate, setRepairUntilDate] = useState<string>('');
+  const [repairReason, setRepairReason] = useState<string>('');
+
+  // Стан для кастомного діалогу підтвердження дій
+  const [confirmAction, setConfirmAction] = useState<{ message: string; onConfirm: () => void } | null>(null);
 
   // Кастомний інтерактивний календар
   const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false);
@@ -1275,22 +1285,91 @@ function App() {
   };
 
   // Видалення власного оголошення
-  const handleDeleteListing = async (id: number) => {
-    if (!confirm('Ви впевнені, що хочете видалити це оголошення? Решта замовлень на цей предмет також будуть скасовані.')) return;
+  const handleDeleteListing = (id: number) => {
+    setConfirmAction({
+      message: 'Ви впевнені, що хочете видалити це оголошення? Решта замовлень на цей предмет також будуть скасовані.',
+      onConfirm: async () => {
+        setLoading(true);
+        setErrorMsg(null);
+        try {
+          await listingAPI.deleteListing(id);
+          setSuccessMsg('Оголошення успішно видалено!');
+          loadMyListings();
+          loadListings();
+        } catch (err: any) {
+          setErrorMsg(err.message || 'Не вдалося видалити оголошення');
+        } finally {
+          setLoading(false);
+        }
+      }
+    });
+  };
+
+  // Маркування оголошення як зламаного
+  const handleReportBroken = (id: number) => {
+    const defaultDate = new Date();
+    defaultDate.setDate(defaultDate.getDate() + 7); // За замовчуванням 7 днів
+    const defaultDateStr = getLocalDateString(defaultDate);
+
+    setRepairUntilDate(defaultDateStr);
+    setRepairReason('');
+    setRepairListingId(id);
+    setIsRepairModalOpen(true);
+  };
+
+  // Обробник відправки форми ремонту
+  const handleRepairSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (repairListingId === null) return;
+    if (!repairUntilDate.trim()) {
+      setErrorMsg("Будь ласка, вкажіть коректну дату.");
+      return;
+    }
+    const selectedDate = new Date(repairUntilDate);
+    if (isNaN(selectedDate.getTime()) || selectedDate < new Date(new Date().setHours(0,0,0,0))) {
+      setErrorMsg("Дата повинна бути коректною та вказувати на сьогодні або майбутній день.");
+      return;
+    }
+    if (!repairReason.trim()) {
+      setErrorMsg("Будь ласка, вкажіть причину ремонту.");
+      return;
+    }
+
     setLoading(true);
     setErrorMsg(null);
     try {
-      await listingAPI.deleteListing(id);
-      setSuccessMsg('Оголошення успішно видалено!');
-      
-      // Оновлюємо списки оголошень на екранах
+      const res = await listingAPI.reportBroken(repairListingId, repairUntilDate, repairReason);
+      setSuccessMsg(res.message);
+      setIsRepairModalOpen(false);
+      setRepairListingId(null);
       loadMyListings();
       loadListings();
     } catch (err: any) {
-      setErrorMsg(err.message || 'Не вдалося видалити оголошення');
+      setErrorMsg(err.message || 'Не вдалося позначити товар як зламаний');
     } finally {
       setLoading(false);
     }
+  };
+
+  // Позначення оголошення як справного (завершення ремонту)
+  const handleResolveBroken = (id: number) => {
+    setConfirmAction({
+      message: 'Ви впевнені, що хочете позначити цей товар як справний та завершити ремонт раніше?',
+      onConfirm: async () => {
+        setLoading(true);
+        setErrorMsg(null);
+        try {
+          const res = await listingAPI.resolveBroken(id);
+          setSuccessMsg(res.message);
+          loadMyListings();
+          loadListings();
+        } catch (err: any) {
+          setErrorMsg(err.message || 'Не вдалося позначити товар як справний');
+        } finally {
+          setLoading(false);
+        }
+      }
+    });
   };
 
   // Відкрити модалку редагування оголошення
@@ -1491,30 +1570,31 @@ function App() {
   };
 
   // Скасування бронювання (орендарем)
-  const handleCancelBooking = async (id: number) => {
-    if (!confirm('Ви впевнені, що хочете скасувати цей запит на оренду?')) return;
-    setLoading(true);
-    try {
-      await bookingAPI.updateBookingStatus(id, 'CANCELLED');
-      setSuccessMsg('Запит успішно скасовано');
-      loadMyRentals();
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Не вдалося скасувати запит');
-    } finally {
-      setLoading(false);
-    }
+  const handleCancelBooking = (id: number) => {
+    setConfirmAction({
+      message: 'Ви впевнені, що хочете скасувати цей запит на оренду?',
+      onConfirm: async () => {
+        setLoading(true);
+        try {
+          await bookingAPI.updateBookingStatus(id, 'CANCELLED');
+          setSuccessMsg('Запит успішно скасовано');
+          loadMyRentals();
+        } catch (err: any) {
+          setErrorMsg(err.message || 'Не вдалося скасувати запит');
+        } finally {
+          setLoading(false);
+        }
+      }
+    });
   };
 
   // Скасування оренди власником (через поломку / форс-мажор)
   const handleOwnerCancelBooking = async (id: number) => {
-    const reason = prompt("Вкажіть причину скасування оренди (наприклад: інструмент зламався, технічні причини):");
-    if (reason === null) return; // Якщо натиснуто скасувати у діалоговому вікні
-    
     setLoading(true);
     setErrorMsg(null);
     try {
-      await bookingAPI.updateBookingStatus(id, 'CANCELLED', reason || 'технічні причини');
-      setSuccessMsg('Бронювання скасовано, орендаря сповіщено про причину.');
+      await bookingAPI.updateBookingStatus(id, 'CANCELLED', 'скасовано власником');
+      setSuccessMsg('Бронювання скасовано.');
       loadMyRequests();
     } catch (err: any) {
       setErrorMsg(err.message || 'Не вдалося скасувати оренду');
@@ -1524,28 +1604,32 @@ function App() {
   };
 
   // Оновлення статусу власником (CONFIRMED, REJECTED або COMPLETED)
-  const handleStatusUpdate = async (id: number, status: 'CONFIRMED' | 'REJECTED' | 'COMPLETED') => {
+  const handleStatusUpdate = (id: number, status: 'CONFIRMED' | 'REJECTED' | 'COMPLETED') => {
     let text = '';
     if (status === 'CONFIRMED') text = 'підтвердити';
     else if (status === 'REJECTED') text = 'відхилити';
     else if (status === 'COMPLETED') text = 'підтвердити повернення речі для';
-    
-    if (!confirm(`Ви впевнені, що хочете ${text} цей запит?`)) return;
-    setLoading(true);
-    try {
-      await bookingAPI.updateBookingStatus(id, status);
-      let successMsgText = '';
-      if (status === 'CONFIRMED') successMsgText = 'підтверджено';
-      else if (status === 'REJECTED') successMsgText = 'відхилено';
-      else if (status === 'COMPLETED') successMsgText = 'завершено (повернення підтверджено)';
-      
-      setSuccessMsg(`Запит успішно ${successMsgText}`);
-      loadMyRequests();
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Не вдалося змінити статус запиту');
-    } finally {
-      setLoading(false);
-    }
+
+    setConfirmAction({
+      message: `Ви впевнені, що хочете ${text} цей запит?`,
+      onConfirm: async () => {
+        setLoading(true);
+        try {
+          await bookingAPI.updateBookingStatus(id, status);
+          let successMsgText = '';
+          if (status === 'CONFIRMED') successMsgText = 'підтверджено';
+          else if (status === 'REJECTED') successMsgText = 'відхилено';
+          else if (status === 'COMPLETED') successMsgText = 'завершено (повернення підтверджено)';
+          
+          setSuccessMsg(`Запит успішно ${successMsgText}`);
+          loadMyRequests();
+        } catch (err: any) {
+          setErrorMsg(err.message || 'Не вдалося змінити статус запиту');
+        } finally {
+          setLoading(false);
+        }
+      }
+    });
   };
 
   // Розрахунок вартості бронювання в реальному часі
@@ -2893,10 +2977,17 @@ function App() {
                 <tbody>
                   {myListings.map(item => {
                     const dateStr = new Date(item.createdAt || '').toLocaleDateString('uk-UA');
+                    const isUnderRepair = !!(item.brokenUntil && new Date(item.brokenUntil) > new Date());
                     return (
                       <tr key={item.id}>
                         <td>
-                          <strong>{item.title}</strong><br />
+                          <strong>{item.title}</strong>
+                          {isUnderRepair && (
+                            <span style={{ color: '#ef4444', fontWeight: 600, fontSize: '12px', marginLeft: '6px' }}>
+                              (На ремонті до {new Date(item.brokenUntil!).toLocaleDateString('uk-UA')})
+                            </span>
+                          )}
+                          <br />
                           <span className="text-muted">Локація: {item.location}</span>
                         </td>
                         <td>{item.category?.name || 'Інше'}</td>
@@ -2918,6 +3009,29 @@ function App() {
                             >
                               Редагувати
                             </button>
+                            {isUnderRepair ? (
+                              <>
+                                <button 
+                                  style={{ backgroundColor: '#10b981', color: 'white' }}
+                                  onClick={() => handleResolveBroken(item.id)}
+                                >
+                                  Полагодити
+                                </button>
+                                <button 
+                                  style={{ backgroundColor: '#3b82f6', color: 'white' }}
+                                  onClick={() => handleReportBroken(item.id)}
+                                >
+                                  Продовжити
+                                </button>
+                              </>
+                            ) : (
+                              <button 
+                                style={{ backgroundColor: '#ef4444', color: 'white' }}
+                                onClick={() => handleReportBroken(item.id)}
+                              >
+                                Зламався
+                              </button>
+                            )}
                             <button 
                               className="danger" 
                               onClick={() => handleDeleteListing(item.id)}
@@ -4052,6 +4166,95 @@ function App() {
                 </button>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {isRepairModalOpen && (
+        <div className="modal-overlay" onClick={() => { setIsRepairModalOpen(false); setRepairListingId(null); }}>
+          <div className="modal-content" style={{ maxWidth: '500px' }} onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close-btn" onClick={() => { setIsRepairModalOpen(false); setRepairListingId(null); }}>×</button>
+            <h2 style={{ marginBottom: '10px' }}>Повідомити про поломку</h2>
+            <p style={{ color: '#666', fontSize: '14px', marginBottom: '20px', lineHeight: '1.4' }}>
+              Вкажіть дату, до якої товар буде в ремонті. Всі бронювання, які перетинаються з цим періодом, будуть скасовані автоматично, а орендарі отримають сповіщення з вашим коментарем.
+            </p>
+            <form onSubmit={handleRepairSubmit}>
+              <div className="form-group" style={{ marginBottom: '15px' }}>
+                <label htmlFor="repair-until-date" style={{ fontWeight: 500, display: 'block', marginBottom: '6px' }}>Ремонт до (включно) *</label>
+                <input 
+                  type="date" 
+                  id="repair-until-date"
+                  required
+                  min={new Date().toISOString().split('T')[0]}
+                  value={repairUntilDate}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => setRepairUntilDate(e.target.value)}
+                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ccc' }}
+                />
+              </div>
+
+              <div className="form-group" style={{ marginBottom: '20px' }}>
+                <label htmlFor="repair-reason" style={{ fontWeight: 500, display: 'block', marginBottom: '6px' }}>Причина скасування бронювань *</label>
+                <textarea 
+                  id="repair-reason"
+                  required
+                  rows={4}
+                  value={repairReason}
+                  onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setRepairReason(e.target.value)}
+                  placeholder="Опишіть причину поломки/ремонту, яка буде надіслана орендарям..."
+                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ccc', resize: 'vertical', minHeight: '100px' }}
+                />
+              </div>
+
+              <button type="submit" className="primary" style={{ width: '100%', marginTop: '10px' }} disabled={loading}>
+                {loading ? 'Надіслання...' : 'Підтвердити та скасувати бронювання'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {confirmAction && (
+        <div className="modal-overlay" onClick={() => setConfirmAction(null)}>
+          <div className="modal-content" style={{ maxWidth: '440px', padding: '24px', textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close-btn" onClick={() => setConfirmAction(null)}>×</button>
+            <h3 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '12px', color: '#222' }}>Підтвердження дії</h3>
+            <p style={{ color: '#666', fontSize: '14px', marginBottom: '24px', lineHeight: '1.5' }}>
+              {confirmAction.message}
+            </p>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button 
+                onClick={() => setConfirmAction(null)}
+                style={{ 
+                  flex: 1, 
+                  padding: '12px', 
+                  borderRadius: '8px', 
+                  border: '1px solid #ccc', 
+                  background: '#fff', 
+                  color: '#222', 
+                  fontWeight: 600, 
+                  cursor: 'pointer',
+                  transition: 'background 0.2s'
+                }}
+              >
+                Скасувати
+              </button>
+              <button 
+                className="primary" 
+                onClick={() => {
+                  confirmAction.onConfirm();
+                  setConfirmAction(null);
+                }}
+                style={{ 
+                  flex: 1, 
+                  padding: '12px', 
+                  borderRadius: '8px', 
+                  fontWeight: 600, 
+                  cursor: 'pointer' 
+                }}
+              >
+                Підтвердити
+              </button>
+            </div>
           </div>
         </div>
       )}

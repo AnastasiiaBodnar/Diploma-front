@@ -148,6 +148,23 @@ export const listingAPI = {
     });
     return handleResponse(res);
   },
+
+  async reportBroken(id: number, untilDate: string, reason: string) {
+    const res = await fetch(`${API_BASE_URL}/listings/${id}/report-broken`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ untilDate, reason }),
+    });
+    return handleResponse(res);
+  },
+
+  async resolveBroken(id: number) {
+    const res = await fetch(`${API_BASE_URL}/listings/${id}/resolve-broken`, {
+      method: 'POST',
+      headers: getHeaders(),
+    });
+    return handleResponse(res);
+  },
 };
 
 export const bookingAPI = {
