@@ -385,6 +385,11 @@ function App() {
   const [minPriceQuery, setMinPriceQuery] = useState<string>('');
   const [maxPriceQuery, setMaxPriceQuery] = useState<string>('');
 
+  // Фільтрація для "Мої оголошення"
+  const [mySearchQuery, setMySearchQuery] = useState<string>('');
+  const [myCategoryFilter, setMyCategoryFilter] = useState<string>('');
+  const [myStatusFilter, setMyStatusFilter] = useState<string>('all'); // all, active, repair
+
   // Модалка перегляду
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
   const [startDate, setStartDate] = useState<string>('');
@@ -2962,90 +2967,187 @@ function App() {
               Ви ще не додали жодного оголошення. Скористайтеся вкладкою «Додати оголошення».
             </p>
           ) : (
-            <div className="table-wrapper">
-              <table className="simple-table">
-                <thead>
-                  <tr>
-                    <th>Оголошення</th>
-                    <th>Категорія</th>
-                    <th>Ціна за добу</th>
-                    <th>Застава</th>
-                    <th>Дата додавання</th>
-                    <th>Дії</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {myListings.map(item => {
-                    const dateStr = new Date(item.createdAt || '').toLocaleDateString('uk-UA');
-                    const isUnderRepair = !!(item.brokenUntil && new Date(item.brokenUntil) > new Date());
-                    return (
-                      <tr key={item.id}>
-                        <td>
-                          <strong>{item.title}</strong>
-                          {isUnderRepair && (
-                            <span style={{ color: '#ef4444', fontWeight: 600, fontSize: '12px', marginLeft: '6px' }}>
-                              (На ремонті до {new Date(item.brokenUntil!).toLocaleDateString('uk-UA')})
-                            </span>
-                          )}
-                          <br />
-                          <span className="text-muted">Локація: {item.location}</span>
-                        </td>
-                        <td>{item.category?.name || 'Інше'}</td>
-                        <td><strong>{item.price} грн</strong></td>
-                        <td>{item.deposit} грн</td>
-                        <td>{dateStr}</td>
-                        <td>
-                          <div className="action-buttons">
-                            <button 
-                              onClick={() => {
-                                window.open(`/?listing=${item.id}`, '_blank');
-                              }}
-                            >
-                              Переглянути
-                            </button>
-                            <button 
-                              style={{ backgroundColor: '#ff9c6e', color: 'white' }}
-                              onClick={() => openEditModal(item)}
-                            >
-                              Редагувати
-                            </button>
-                            {isUnderRepair ? (
-                              <>
-                                <button 
-                                  style={{ backgroundColor: '#10b981', color: 'white' }}
-                                  onClick={() => handleResolveBroken(item.id)}
-                                >
-                                  Полагодити
-                                </button>
-                                <button 
-                                  style={{ backgroundColor: '#3b82f6', color: 'white' }}
-                                  onClick={() => handleReportBroken(item.id)}
-                                >
-                                  Продовжити
-                                </button>
-                              </>
-                            ) : (
-                              <button 
-                                style={{ backgroundColor: '#ef4444', color: 'white' }}
-                                onClick={() => handleReportBroken(item.id)}
-                              >
-                                Зламався
-                              </button>
-                            )}
-                            <button 
-                              className="danger" 
-                              onClick={() => handleDeleteListing(item.id)}
-                            >
-                              Видалити
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            (() => {
+              const filtered = myListings.filter(item => {
+                if (mySearchQuery.trim()) {
+                  const q = mySearchQuery.toLowerCase();
+                  const matchTitle = item.title.toLowerCase().includes(q);
+                  const matchDesc = item.description.toLowerCase().includes(q);
+                  if (!matchTitle && !matchDesc) return false;
+                }
+                if (myCategoryFilter) {
+                  if (item.categoryId !== parseInt(myCategoryFilter, 10)) return false;
+                }
+                if (myStatusFilter !== 'all') {
+                  const isUnderRepair = !!(item.brokenUntil && new Date(item.brokenUntil) > new Date());
+                  if (myStatusFilter === 'repair' && !isUnderRepair) return false;
+                  if (myStatusFilter === 'active' && isUnderRepair) return false;
+                }
+                return true;
+              });
+
+              const filterBar = (
+                <div className="rozetka-filter-bar">
+                  <div style={{ flex: '2', minWidth: '200px' }}>
+                    <input 
+                      type="text" 
+                      placeholder="Пошук за назвою або описом..." 
+                      value={mySearchQuery} 
+                      onChange={(e) => setMySearchQuery(e.target.value)}
+                      className="rozetka-filter-input"
+                    />
+                  </div>
+                  <div style={{ flex: '1', minWidth: '150px' }}>
+                    <select 
+                      value={myCategoryFilter} 
+                      onChange={(e) => setMyCategoryFilter(e.target.value)}
+                      className="rozetka-filter-input"
+                    >
+                      <option value="">Всі категорії</option>
+                      {categories.map(cat => (
+                        <option key={cat.id} value={cat.id}>{cat.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div style={{ flex: '1', minWidth: '150px' }}>
+                    <select 
+                      value={myStatusFilter} 
+                      onChange={(e) => setMyStatusFilter(e.target.value)}
+                      className="rozetka-filter-input"
+                    >
+                      <option value="all">Будь-який статус</option>
+                      <option value="active">Справний (Активний)</option>
+                      <option value="repair">На ремонті</option>
+                    </select>
+                  </div>
+                </div>
+              );
+
+              return (
+                <>
+                  {filterBar}
+                  {filtered.length === 0 ? (
+                    <p style={{ margin: '30px 0', color: '#666', textAlign: 'center' }}>
+                      Нічого не знайдено за вибраними фільтрами.
+                    </p>
+                  ) : (
+                    <div className="table-wrapper">
+                      <table className="simple-table">
+                        <thead>
+                          <tr>
+                            <th>Оголошення</th>
+                            <th>Категорія</th>
+                            <th>Ціна за добу</th>
+                            <th>Застава</th>
+                            <th>Дата додавання</th>
+                            <th>Дії</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filtered.map(item => {
+                            const dateStr = new Date(item.createdAt || '').toLocaleDateString('uk-UA');
+                            const isUnderRepair = !!(item.brokenUntil && new Date(item.brokenUntil) > new Date());
+                            return (
+                              <tr key={item.id}>
+                                <td>
+                                  <strong>{item.title}</strong>
+                                  {isUnderRepair && (
+                                    <span style={{ color: '#ef4444', fontWeight: 600, fontSize: '12px', marginLeft: '6px' }}>
+                                      (На ремонті до {new Date(item.brokenUntil!).toLocaleDateString('uk-UA')})
+                                    </span>
+                                  )}
+                                  <br />
+                                  <span className="text-muted">Локація: {item.location}</span>
+                                </td>
+                                <td>{item.category?.name || 'Інше'}</td>
+                                <td><strong>{item.price} грн</strong></td>
+                                <td>{item.deposit} грн</td>
+                                <td>{dateStr}</td>
+                                <td>
+                                  <div className="action-buttons">
+                                    <button 
+                                      onClick={() => {
+                                        window.open(`/?listing=${item.id}`, '_blank');
+                                      }}
+                                      title="Переглянути"
+                                      className="rozetka-action-btn btn-view"
+                                    >
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                      </svg>
+                                    </button>
+                                    <button 
+                                      onClick={() => openEditModal(item)}
+                                      title="Редагувати"
+                                      className="rozetka-action-btn btn-edit"
+                                    >
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+                                      </svg>
+                                    </button>
+                                    {isUnderRepair ? (
+                                      <>
+                                        <button 
+                                          onClick={() => handleResolveBroken(item.id)}
+                                          title="Полагодити"
+                                          className="rozetka-action-btn btn-fix"
+                                        >
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                            <polyline points="22 4 12 14.01 9 11.01"/>
+                                          </svg>
+                                        </button>
+                                        <button 
+                                          onClick={() => handleReportBroken(item.id)}
+                                          title="Продовжити ремонт"
+                                          className="rozetka-action-btn btn-extend"
+                                        >
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                            <line x1="16" y1="2" x2="16" y2="6"/>
+                                            <line x1="8" y1="2" x2="8" y2="6"/>
+                                            <line x1="3" y1="10" x2="21" y2="10"/>
+                                          </svg>
+                                        </button>
+                                      </>
+                                    ) : (
+                                      <button 
+                                        onClick={() => handleReportBroken(item.id)}
+                                        title="Повідомити про поломку"
+                                        className="rozetka-action-btn btn-broken"
+                                      >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                          <line x1="12" y1="9" x2="12" y2="13"/>
+                                          <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                        </svg>
+                                      </button>
+                                    )}
+                                    <button 
+                                      onClick={() => handleDeleteListing(item.id)}
+                                      title="Видалити"
+                                      className="rozetka-action-btn btn-delete"
+                                    >
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                        <polyline points="3 6 5 6 21 6"/>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                        <line x1="10" y1="11" x2="10" y2="17"/>
+                                        <line x1="14" y1="11" x2="14" y2="17"/>
+                                      </svg>
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </>
+              );
+            })()
           )}
         </div>
       )}
