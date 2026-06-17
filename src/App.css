@@ -1,184 +1,2247 @@
-.counter {
-  font-size: 16px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  color: var(--accent);
-  background: var(--accent-bg);
-  border: 2px solid transparent;
-  transition: border-color 0.3s;
-  margin-bottom: 24px;
-
-  &:hover {
-    border-color: var(--accent-border);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
+.sticky-header-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+  background-color: #ffffff;
 }
 
-.hero {
+/* Шапка сайту в стилі Airbnb */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding: 16px 0 20px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.app-logo {
+  font-size: 24px;
+  font-weight: 800;
+  text-decoration: none;
+  color: var(--primary-color); /* Airbnb Rose колір */
+  cursor: pointer;
+  letter-spacing: -0.8px;
+}
+
+.app-logo:hover {
+  opacity: 0.9;
+}
+
+.app-nav {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.nav-tab {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  padding: 10px 16px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 0px;
+  transition: color 0.15s;
   position: relative;
-
-  .base,
-  .framework,
-  .vite {
-    inset-inline: 0;
-    margin: 0 auto;
-  }
-
-  .base {
-    width: 170px;
-    position: relative;
-    z-index: 0;
-  }
-
-  .framework,
-  .vite {
-    position: absolute;
-  }
-
-  .framework {
-    z-index: 1;
-    top: 34px;
-    height: 28px;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
-      scale(1.4);
-  }
-
-  .vite {
-    z-index: 0;
-    top: 107px;
-    height: 26px;
-    width: auto;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
-      scale(0.8);
-  }
 }
 
-#center {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-  place-content: center;
-  place-items: center;
-  flex-grow: 1;
-
-  @media (max-width: 1024px) {
-    padding: 32px 20px 24px;
-    gap: 18px;
-  }
+.nav-tab:hover {
+  color: var(--text-color);
+  background: none;
 }
 
-#next-steps {
+.nav-tab.active {
+  color: var(--text-color);
+  background: none;
+}
+
+.nav-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 16px;
+  right: 16px;
+  height: 2px;
+  background-color: var(--text-color); /* Тонке підкреслення активної вкладки */
+}
+
+.user-badge {
+  font-size: 14px;
   display: flex;
-  border-top: 1px solid var(--border);
-  text-align: left;
+  align-items: center;
+  gap: 12px;
+  font-weight: 500;
+}
 
-  & > div {
-    flex: 1 1 0;
-    padding: 32px;
-    @media (max-width: 1024px) {
-      padding: 24px 20px;
-    }
+/* Контейнер для авторизації */
+.auth-wrapper {
+  max-width: 420px;
+  margin: 60px auto;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 24px;
+  background-color: var(--bg-color);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.auth-tabs {
+  display: flex;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.auth-tab-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--text-muted);
+  font-size: 15px;
+  transition: color 0.15s;
+}
+
+.auth-tab-btn.active {
+  border-bottom: 2px solid var(--border-focus);
+  color: var(--text-color);
+}
+
+/* Фірмова об'єднана пошукова панель-пігулка */
+.filter-section {
+  border: 1px solid var(--border-color);
+  border-radius: 32px; /* Пігулка */
+  padding: 8px 8px 8px 24px;
+  margin-bottom: 32px;
+  background-color: var(--bg-color);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.15s;
+}
+
+.filter-section:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.filter-grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-segment {
+  flex: 1;
+  min-width: 140px;
+  border-right: 1px solid #ebebeb;
+  padding-right: 16px;
+  margin-right: 8px;
+}
+
+.filter-segment:nth-last-of-type(2) {
+  border-right: none;
+  padding-right: 0;
+  margin-right: 0;
+}
+
+.filter-segment label {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text-color);
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.filter-segment input {
+  border: none;
+  padding: 4px 0;
+  font-size: 14px;
+  font-weight: 500;
+  background: transparent;
+  color: var(--text-color);
+  width: 100%;
+  border-radius: 0;
+}
+
+.filter-segment select {
+  border: none;
+  padding: 4px 16px 4px 0;
+  font-size: 13px;
+  font-weight: 500;
+  background: transparent;
+  color: var(--text-color);
+  width: 100%;
+  border-radius: 0;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23717171' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right center;
+  background-size: 12px 12px;
+}
+
+.filter-segment input:focus,
+.filter-segment select:focus {
+  box-shadow: none !important;
+  border-color: transparent !important;
+  outline: none !important;
+}
+
+.filter-segment input::placeholder {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-pill-btn {
+  background-color: var(--primary-color);
+  color: #ffffff;
+  border: none;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px 24px;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.search-pill-btn:hover {
+  background-color: var(--primary-hover);
+}
+
+.clear-pill-btn {
+  background-color: transparent;
+  color: var(--text-muted);
+  border: none;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 12px 16px;
+  border-radius: 24px;
+  cursor: pointer;
+}
+
+.clear-pill-btn:hover {
+  background-color: var(--bg-light);
+  color: var(--text-color);
+}
+
+@media (max-width: 768px) {
+  .filter-section {
+    border-radius: 16px;
+    padding: 16px;
   }
-
-  .icon {
-    margin-bottom: 16px;
-    width: 22px;
-    height: 22px;
-  }
-
-  @media (max-width: 1024px) {
+  
+  .filter-grid {
     flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-segment {
+    border-right: none;
+    border-bottom: 1px solid #ebebeb;
+    padding-right: 0;
+    padding-bottom: 8px;
+    margin-right: 0;
+    margin-bottom: 8px;
+  }
+  
+  .filter-segment:nth-last-of-type(2) {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+  
+  .filter-actions {
+    justify-content: space-between;
+    margin-top: 8px;
+  }
+  
+  .search-pill-btn {
+    width: 100%;
     text-align: center;
   }
 }
 
-#docs {
-  border-right: 1px solid var(--border);
-
-  @media (max-width: 1024px) {
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-  }
+/* Грід оголошень у стилі Airbnb (чистий, без карток-боксовіх обводок) */
+.listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 32px 24px;
+  margin-bottom: 48px;
 }
 
-#next-steps ul {
-  list-style: none;
+.listings-grid.full-grid {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+.listing-card {
+  position: relative;
+  border: none; /* Жодних рамок */
   padding: 0;
   display: flex;
+  flex-direction: column;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.listing-card-image {
+  width: 100%;
+  aspect-ratio: 1 / 1; /* Рівні квадратні фотографії */
+  height: auto;
+  object-fit: cover;
+  background-color: #f3f3f3;
+  border-radius: 12px; /* М'яке заокруглення */
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  margin-bottom: 10px;
+  transition: opacity 0.15s;
+}
+
+.listing-card:hover .listing-card-image {
+  opacity: 0.95;
+}
+
+.listing-card-placeholder {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background-color: #f7f7f7;
+  border-radius: 12px;
+  border: 1px dashed var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.listing-card-title {
+  font-size: 15px;
+  margin-bottom: 4px;
+  font-weight: 600;
+  color: var(--text-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.listing-card-meta {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.listing-card-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: auto;
+}
+
+.listing-card-price {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+.listing-card-price::after {
+  content: ' / добу';
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Модальне вікно з розмитим заднім фоном (Backdrop Filter) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px); /* Преміальне розмиття фону */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 24px;
+}
+
+.modal-content {
+  background-color: var(--bg-color);
+  border: none;
+  border-radius: 16px; /* Закруглені вікна */
+  padding: 32px;
+  width: 100%;
+  max-width: 860px;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--text-color);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  transition: background-color 0.15s;
+}
+
+.modal-close-btn:hover {
+  background-color: var(--bg-light);
+}
+
+/* Деталі оголошення в стилі Airbnb */
+.listing-detail-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 32px;
+  margin-top: 16px;
+}
+
+@media (max-width: 768px) {
+  .listing-detail-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.detail-image {
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.detail-placeholder {
+  width: 100%;
+  height: 300px;
+  background-color: #f7f7f7;
+  border-radius: 12px;
+  border: 1px dashed var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+/* Віджет бронювання Airbnb (глухий плаваючий блок з тінню) */
+.booking-box {
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+  background-color: var(--bg-color);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  position: sticky;
+  top: 24px;
+  z-index: 1010;
+}
+
+.booking-box h3 {
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+
+.booking-calculation {
+  border-top: 1px solid var(--border-color);
+  margin-top: 20px;
+  padding-top: 20px;
+  font-size: 14px;
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
   gap: 8px;
-  margin: 32px 0 0;
+}
 
-  .logo {
-    height: 18px;
+.booking-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 16px;
+  margin-top: 12px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 12px;
+  color: var(--text-dark);
+}
+
+/* Таблиці списків (Кабінети) */
+.table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  margin-bottom: 32px;
+  background-color: var(--bg-color);
+}
+
+.simple-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.simple-table th, 
+.simple-table td {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 14px;
+}
+
+.simple-table th {
+  background-color: var(--bg-light);
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+.simple-table tr:last-child td {
+  border-bottom: none;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Rozetka-style search and filter bar */
+.rozetka-filter-bar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  background-color: #ffffff;
+  padding: 16px;
+  border-radius: 4px;
+  border: 1px solid #e9e9e9;
+}
+
+.rozetka-filter-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 4px;
+  border: 1px solid #d2d2d2;
+  box-sizing: border-box;
+  height: 40px;
+  font-size: 14px;
+  color: #221f1f;
+  background-color: #fff;
+  transition: border-color 0.15s ease-in-out;
+}
+
+.rozetka-filter-input:focus {
+  border-color: #00a046;
+  outline: none;
+}
+
+/* Rozetka-style action buttons */
+.rozetka-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  border: 1px solid #e9e9e9;
+  background-color: #fff;
+  color: #797878;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease-in-out;
+}
+
+.rozetka-action-btn.btn-view:hover {
+  border-color: #00a046;
+  background-color: #f0fbf4;
+  color: #00a046;
+}
+
+.rozetka-action-btn.btn-edit:hover {
+  border-color: #ff9c6e;
+  background-color: #fff6f0;
+  color: #ff9c6e;
+}
+
+.rozetka-action-btn.btn-fix:hover {
+  border-color: #00a046;
+  background-color: #f0fbf4;
+  color: #00a046;
+}
+
+.rozetka-action-btn.btn-extend:hover {
+  border-color: #3b82f6;
+  background-color: #f0f6ff;
+  color: #3b82f6;
+}
+
+.rozetka-action-btn.btn-broken:hover {
+  border-color: #f84147;
+  background-color: #fff5f5;
+  color: #f84147;
+}
+
+.rozetka-action-btn.btn-delete:hover {
+  border-color: #f84147;
+  background-color: #fff5f5;
+  color: #f84147;
+}
+
+/* Форма створення нового оголошення */
+.form-layout {
+  max-width: 640px;
+  margin: 0 auto 40px;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 32px;
+  background-color: var(--bg-color);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.image-preview-box {
+  width: 140px;
+  height: 140px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  margin-top: 12px;
+  background-color: var(--bg-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.image-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.text-muted {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Airbnb Map Integration Styling */
+
+/* Головний контейнер спліт-екрану */
+.main-layout-container {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 24px;
+  align-items: start;
+  margin-bottom: 48px;
+}
+
+.listings-side {
+  min-width: 0;
+}
+
+.map-side {
+  position: sticky;
+  top: 200px;
+  height: calc(100vh - 264px);
+  min-height: 380px;
+}
+
+/* Кнопка перемикання Карта/Список на мобільних пристроях */
+.mobile-map-toggle-btn {
+  display: none;
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  background-color: #222222;
+  color: white;
+  border: none;
+  border-radius: 24px;
+  padding: 12px 20px;
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.mobile-map-toggle-btn:hover {
+  background-color: #000000;
+  transform: translateX(-50%) scale(1.04);
+}
+
+.mobile-map-toggle-btn:active {
+  transform: translateX(-50%) scale(0.96);
+}
+
+/* Маркери з цінами на карті (Airbnb Style) */
+.map-price-marker-container {
+  background: none;
+  border: none;
+}
+
+.map-price-marker {
+  background-color: #ffffff;
+  color: #222222;
+  border-radius: 10px;
+  border: 1px solid #dddddd;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.15s, background-color 0.15s, color 0.15s, box-shadow 0.15s;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 4px 6px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.marker-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: #717171;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.map-price-marker.selected .marker-title {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.map-price-marker.rented .marker-title {
+  color: rgba(26, 122, 62, 0.8);
+}
+
+.map-price-marker.rented.selected .marker-title {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.marker-price {
+  font-size: 12px;
+  font-weight: 800;
+  color: #222222;
+  line-height: 1.2;
+  margin-top: 1px;
+}
+
+.map-price-marker.selected .marker-price {
+  color: #ffffff;
+}
+
+.map-price-marker.rented .marker-price {
+  color: #1a7a3e;
+}
+
+.map-price-marker.rented.selected .marker-price {
+  color: #ffffff;
+}
+
+.map-price-marker:hover {
+  transform: scale(1.08);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  z-index: 999;
+}
+
+.map-price-marker.selected {
+  background-color: #10B981;
+  color: #ffffff;
+  border-color: #10B981;
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.map-price-marker.rented {
+  background-color: #eafaf1;
+  color: #1a7a3e;
+  border-color: #c1f3d3;
+}
+
+.map-price-marker.rented.selected {
+  background-color: #1a7a3e;
+  color: #ffffff;
+  border-color: #1a7a3e;
+  box-shadow: 0 4px 12px rgba(26, 122, 62, 0.4);
+}
+
+.marker-checkmark {
+  font-weight: 900;
+  margin-right: 2px;
+}
+
+.marker-title-pill {
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.map-popup-rented-badge {
+  display: inline-block;
+  font-size: 10px;
+  background-color: #eafaf1;
+  color: #1a7a3e;
+  border: 1px solid #c1f3d3;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 8px;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+/* Кастомний попап карти Leaflet */
+.custom-leaflet-popup .leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+}
+
+.custom-leaflet-popup .leaflet-popup-content {
+  margin: 0;
+  width: 240px !important;
+}
+
+.map-popup-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.map-popup-image {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.map-popup-placeholder {
+  width: 100%;
+  height: 120px;
+  background-color: #f7f7f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #717171;
+  font-size: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.map-popup-title {
+  font-size: 14px;
+  font-weight: 700;
+  padding: 8px 12px 2px;
+  color: #222222;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-popup-category {
+  font-size: 11px;
+  color: #717171;
+  padding: 0 12px 8px;
+}
+
+.map-popup-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.map-popup-price {
+  font-size: 14px;
+  font-weight: 800;
+  color: #222222;
+}
+
+.map-popup-price-unit {
+  font-size: 11px;
+  font-weight: 400;
+  color: #717171;
+}
+
+.map-popup-btn {
+  background-color: #222222;
+  color: white;
+  border: none;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.map-popup-btn:hover {
+  background-color: #000000;
+}
+
+/* Анімація для маркерів вибору на карті */
+@keyframes markerBounce {
+  0% { transform: scale(0.3); opacity: 0; }
+  50% { transform: scale(1.1); }
+  70% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+/* Адаптивність для спліт-екрану */
+@media (max-width: 992px) {
+  .main-layout-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .map-side {
+    display: none;
+    position: fixed;
+    top: 80px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(100vh - 80px);
+    z-index: 998;
+    padding: 0;
+  }
+  
+  .map-side.active {
+    display: block;
+  }
+  
+  .listings-side.inactive {
+    display: none;
   }
 
-  a {
-    color: var(--text-h);
-    font-size: 16px;
-    border-radius: 6px;
-    background: var(--social-bg);
+  .mobile-map-toggle-btn {
     display: flex;
-    padding: 6px 12px;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    transition: box-shadow 0.3s;
-
-    &:hover {
-      box-shadow: var(--shadow);
-    }
-    .button-icon {
-      height: 18px;
-      width: 18px;
-    }
-  }
-
-  @media (max-width: 1024px) {
-    margin-top: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    li {
-      flex: 1 1 calc(50% - 8px);
-    }
-
-    a {
-      width: 100%;
-      justify-content: center;
-      box-sizing: border-box;
-    }
   }
 }
 
-#spacer {
-  height: 88px;
-  border-top: 1px solid var(--border);
-  @media (max-width: 1024px) {
-    height: 48px;
+/* Airbnb Location Autocomplete Dropdown */
+.autocomplete-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 450px;
+  max-width: 95vw;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--border-color);
+  margin-top: 12px;
+  padding: 8px 0;
+  list-style: none;
+  z-index: 1010;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.autocomplete-dropdown li {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+  font-size: 14px;
+  color: var(--text-color);
+  text-align: left;
+}
+
+.autocomplete-dropdown li:hover {
+  background-color: #f7f7f7;
+}
+
+.suggestion-icon-circle {
+  width: 36px;
+  height: 36px;
+  background-color: #f1f1f1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  flex-shrink: 0;
+  transition: background-color 0.15s;
+}
+
+.autocomplete-dropdown li:hover .suggestion-icon-circle {
+  background-color: #e4e4e4;
+}
+
+.suggestion-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 500;
+  color: #222222;
+}
+
+/* --- Airbnb Style Custom Calendar Picker --- */
+.calendar-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2100;
+  padding: 16px;
+}
+
+.calendar-modal-content {
+  background-color: #ffffff;
+  border-radius: 24px;
+  padding: 32px;
+  width: 100%;
+  max-width: 820px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  color: #222222;
+  font-family: inherit;
+}
+
+.calendar-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.calendar-nights-info h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 6px 0;
+  color: #222222;
+}
+
+.calendar-nights-info p {
+  font-size: 14px;
+  color: #6a6a6a;
+  margin: 0;
+}
+
+.calendar-inputs-box {
+  display: flex;
+  border: 1px solid #b0b0b0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.calendar-input-seg {
+  padding: 8px 16px;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  min-width: 130px;
+}
+
+.calendar-input-seg:first-child {
+  border-right: 1px solid #b0b0b0;
+}
+
+.calendar-input-seg .label {
+  font-size: 9px;
+  font-weight: 800;
+  color: #222222;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.calendar-input-seg .value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #222222;
+}
+
+.calendar-grid-container {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.calendar-month-view {
+  flex: 1;
+  min-width: 280px;
+  max-width: 320px;
+}
+
+.calendar-month-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.calendar-month-name {
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  width: 100%;
+}
+
+.calendar-nav-btn {
+  background: none;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #222222;
+  transition: background-color 0.15s;
+}
+
+.calendar-nav-btn:hover {
+  background-color: #f7f7f7;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.calendar-weekdays span {
+  font-size: 12px;
+  font-weight: 600;
+  color: #717171;
+}
+
+.calendar-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  row-gap: 4px;
+}
+
+.calendar-day-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  border-radius: 50%;
+  transition: background-color 0.1s, color 0.1s;
+}
+
+.calendar-day-cell:hover:not(.disabled):not(.busy) {
+  background-color: #f7f7f7;
+  border: 1px solid #222222;
+}
+
+.calendar-day-cell.disabled {
+  color: #dddddd;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.calendar-day-cell.busy {
+  color: #b0b0b0;
+  text-decoration: line-through;
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.calendar-day-number {
+  position: relative;
+  z-index: 2;
+}
+
+.calendar-day-cell.selected-start,
+.calendar-day-cell.selected-end {
+  background-color: transparent !important;
+  color: #ffffff !important;
+  z-index: 5;
+}
+
+.calendar-day-cell.selected-start::before,
+.calendar-day-cell.selected-end::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #222222;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.calendar-day-cell.in-range {
+  background-color: #f7f7f7;
+  border-radius: 0;
+  color: #222222;
+}
+
+.calendar-day-cell.in-range:hover {
+  background-color: #ebebeb;
+}
+
+.calendar-day-cell.selected-start::after,
+.calendar-day-cell.selected-end::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  background-color: #f7f7f7;
+  z-index: 0;
+}
+
+.calendar-day-cell.selected-start::after {
+  right: 0;
+}
+
+.calendar-day-cell.selected-end::after {
+  left: 0;
+}
+
+/* Для одиночного вибору start == end або при першому кліку прибираємо зсув */
+.calendar-day-cell.single-day::after {
+  display: none;
+}
+
+.calendar-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+  border-top: 1px solid #ebebeb;
+  padding-top: 16px;
+}
+
+.calendar-clear-btn {
+  background: none;
+  border: none;
+  color: #222222;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.calendar-clear-btn:hover {
+  background-color: #f7f7f7;
+}
+
+.calendar-close-btn {
+  background-color: #222222;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.calendar-close-btn:hover {
+  background-color: #000000;
+}
+
+/* Тригер вибору дат (Airbnb Style) */
+.airbnb-date-picker-trigger {
+  display: flex;
+  align-items: center;
+  border: 1px solid #b0b0b0;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+  transition: border-color 0.15s;
+  background-color: #ffffff;
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.airbnb-date-picker-trigger:hover {
+  border-color: #222222;
+}
+
+.airbnb-date-seg {
+  flex: 1;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.airbnb-date-seg .label {
+  font-size: 9px;
+  font-weight: 800;
+  color: #222222;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.airbnb-date-seg .value {
+  font-size: 13px;
+  font-weight: 500;
+  color: #222222;
+}
+
+.airbnb-date-divider {
+  width: 1px;
+  height: 38px;
+  background-color: #b0b0b0;
+  align-self: center;
+}
+
+/* Детальний перегляд речі як повноцінна сторінка (Airbnb Style) */
+.listing-detail-page-container {
+  max-width: 1120px;
+  margin: 0 auto 48px;
+  padding: 0 24px;
+}
+
+.back-link-container {
+  margin-bottom: 20px;
+}
+
+.back-link-btn {
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #222222;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.15s;
+}
+
+.back-link-btn:hover {
+  background-color: #f7f7f7;
+}
+
+.listing-detail-page-content h2 {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #222222;
+}
+
+.listing-detail-page-content .text-muted {
+  font-size: 14px;
+  color: #6a6a6a;
+}
+
+/* Рейтинг на картках оголошень */
+.listing-card-rating {
+  font-size: 14px;
+  font-weight: 600;
+  color: #222222;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.listing-card-rating.new {
+  color: #717171;
+  font-weight: 500;
+}
+
+/* Інтерактивні зірочки відгуків */
+.star-icon {
+  user-select: none;
+}
+.star-icon:hover {
+  transform: scale(1.15);
+}
+.star-icon:active {
+  transform: scale(0.95);
+}
+
+/* --- Airbnb Redesign Styles --- */
+
+.listing-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.listing-detail-header-left h1 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #222222;
+  margin: 0 0 8px 0;
+  line-height: 1.2;
+}
+
+.listing-detail-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #222222;
+  flex-wrap: wrap;
+}
+
+.listing-detail-header-meta a.meta-location-link {
+  color: #717171;
+  text-decoration: underline;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.listing-detail-header-meta a.meta-location-link:hover {
+  color: #222222;
+}
+
+.listing-detail-header-actions {
+  display: flex;
+  gap: 16px;
+}
+
+.listing-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #222222;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background-color 0.15s;
+}
+
+.listing-action-btn:hover {
+  background-color: #f7f7f7;
+}
+
+/* Photo Grid */
+.listing-photo-grid {
+  display: grid;
+  gap: 8px;
+  height: 450px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 32px;
+  position: relative;
+}
+
+/* Dynamic grid layouts depending on the number of photos */
+.listing-photo-grid.photo-count-2 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
+}
+.listing-photo-grid.photo-count-2 .photo-grid-main {
+  grid-column: 1;
+  grid-row: 1;
+}
+.listing-photo-grid.photo-count-2 .photo-grid-sub:nth-child(2) {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.listing-photo-grid.photo-count-3 {
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+.listing-photo-grid.photo-count-3 .photo-grid-main {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+}
+.listing-photo-grid.photo-count-3 .photo-grid-sub:nth-child(2) {
+  grid-column: 2;
+  grid-row: 1;
+}
+.listing-photo-grid.photo-count-3 .photo-grid-sub:nth-child(3) {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.listing-photo-grid.photo-count-4 {
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+}
+.listing-photo-grid.photo-count-4 .photo-grid-main {
+  grid-column: 1;
+  grid-row: 1 / span 3;
+}
+.listing-photo-grid.photo-count-4 .photo-grid-sub:nth-child(2) {
+  grid-column: 2;
+  grid-row: 1;
+}
+.listing-photo-grid.photo-count-4 .photo-grid-sub:nth-child(3) {
+  grid-column: 2;
+  grid-row: 2;
+}
+.listing-photo-grid.photo-count-4 .photo-grid-sub:nth-child(4) {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+/* Default / 5 photos */
+.listing-photo-grid,
+.listing-photo-grid.photo-count-5 {
+  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+.listing-photo-grid .photo-grid-main,
+.listing-photo-grid.photo-count-5 .photo-grid-main {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  height: 100%;
+}
+.listing-photo-grid .photo-grid-sub:nth-child(2),
+.listing-photo-grid.photo-count-5 .photo-grid-sub:nth-child(2) {
+  grid-column: 2;
+  grid-row: 1;
+}
+.listing-photo-grid .photo-grid-sub:nth-child(3),
+.listing-photo-grid.photo-count-5 .photo-grid-sub:nth-child(3) {
+  grid-column: 3;
+  grid-row: 1;
+}
+.listing-photo-grid .photo-grid-sub:nth-child(4),
+.listing-photo-grid.photo-count-5 .photo-grid-sub:nth-child(4) {
+  grid-column: 2;
+  grid-row: 2;
+}
+.listing-photo-grid .photo-grid-sub:nth-child(5),
+.listing-photo-grid.photo-count-5 .photo-grid-sub:nth-child(5) {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.photo-grid-main {
+  position: relative;
+  overflow: hidden;
+  background-color: #f7f7f7;
+  height: 100%;
+}
+
+.photo-grid-main::before {
+  content: "";
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  background-image: var(--bg-image);
+  background-size: cover;
+  background-position: center;
+  filter: blur(20px) brightness(0.95);
+  opacity: 0.45;
+  z-index: 1;
+}
+
+.photo-grid-main img {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  object-fit: contain !important;
+  background-color: transparent;
+}
+
+.photo-grid-sub {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.listing-photo-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.2s, transform 0.3s;
+  cursor: pointer;
+}
+
+.listing-photo-grid img:hover {
+  transform: scale(1.02);
+  opacity: 0.95;
+}
+
+.show-all-photos-btn {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  background-color: #ffffff;
+  color: #222222;
+  border: 1px solid #222222;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.15s, transform 0.1s;
+  z-index: 10;
+}
+
+.show-all-photos-btn:hover {
+  background-color: #f7f7f7;
+  transform: scale(1.02);
+}
+
+.show-all-photos-btn:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 768px) {
+  .listing-photo-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    height: 300px;
+  }
+  .photo-grid-sub {
+    display: none;
   }
 }
 
-.ticks {
+/* Host Profile & Badges */
+.host-profile-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #ebebeb;
+  margin-bottom: 24px;
+}
+
+.host-avatar-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.host-avatar-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #10B981 0%, #047857 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+}
+
+.host-avatar-circle.owner {
+  background: linear-gradient(135deg, #1a7a3e 0%, #11572b 100%);
+  box-shadow: 0 2px 6px rgba(26, 122, 62, 0.3);
+}
+
+.host-info-text h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: #222222;
+}
+
+.host-info-text p {
+  font-size: 14px;
+  color: #717171;
+  margin: 0;
+}
+
+/* Highlights */
+.listing-highlights {
+  padding-bottom: 24px;
+  border-bottom: 1px solid #ebebeb;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.highlight-item {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.highlight-icon {
+  color: #222222;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.highlight-text h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: #222222;
+}
+
+.highlight-text p {
+  font-size: 14px;
+  color: #717171;
+  margin: 0;
+}
+
+/* Description */
+.expandable-description {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #222222;
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #ebebeb;
+}
+
+.description-text.collapsed {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.description-expand-btn {
+  background: none;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  color: #222222;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Double-Month Inline Calendar Section */
+.inline-calendar-section {
+  padding: 24px 0;
+  border-bottom: 1px solid #ebebeb;
+  margin-bottom: 24px;
+}
+
+.inline-calendar-section h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: #222222;
+}
+
+.inline-calendar-section p {
+  font-size: 14px;
+  color: #717171;
+  margin: 0 0 24px 0;
+}
+
+.calendar-grid-container.inline-calendar {
+  justify-content: flex-start;
+  gap: 32px;
+  margin-bottom: 16px;
+}
+
+.calendar-actions-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+/* Reviews Dashboard */
+.reviews-dashboard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 40px;
+  margin-bottom: 32px;
+}
+
+.review-metric-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.review-metric-label {
+  font-size: 14px;
+  color: #222222;
+  font-weight: 400;
+}
+
+.review-metric-progress-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 50%;
+  flex-shrink: 0;
+}
+
+.metric-bar-bg {
+  height: 4px;
+  background-color: #dddddd;
+  border-radius: 2px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.metric-bar-fill {
+  height: 100%;
+  background-color: #222222;
+  border-radius: 2px;
+}
+
+.review-metric-score {
+  font-size: 12px;
+  font-weight: 600;
+  color: #222222;
+  width: 24px;
+  text-align: right;
+}
+
+@media (max-width: 600px) {
+  .reviews-dashboard {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Reviews List layout */
+.reviews-list-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px 40px;
+  margin-bottom: 32px;
+}
+
+@media (max-width: 768px) {
+  .reviews-list-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.review-card {
+  padding: 16px 0;
+}
+
+.review-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.review-card-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #f1f1f1;
+  color: #222222;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+}
+
+.review-card-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #222222;
+  margin: 0;
+}
+
+.review-card-date {
+  font-size: 12px;
+  color: #717171;
+  margin: 2px 0 0 0;
+}
+
+.review-card-rating {
+  margin-left: auto;
+  color: #ffc107;
+  font-size: 12px;
+}
+
+.review-card-comment {
+  font-size: 15px;
+  line-height: 1.5;
+  color: #333333;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* Lightbox Modal */
+.lightbox-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  padding: 24px;
+}
+
+.lightbox-content {
+  width: 100%;
+  max-width: 900px;
+  height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.lightbox-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.lightbox-close-btn {
+  position: absolute;
+  top: -45px;
+  right: 0;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 36px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.lightbox-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: #ffffff;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.lightbox-nav-btn:hover {
+  background-color: rgba(255,255,255,0.25);
+}
+
+.lightbox-nav-btn.prev {
+  left: -64px;
+}
+
+.lightbox-nav-btn.next {
+  right: -64px;
+}
+
+@media (max-width: 768px) {
+  .lightbox-nav-btn.prev {
+    left: 12px;
+  }
+  .lightbox-nav-btn.next {
+    right: 12px;
+  }
+}
+
+/* --- Calendar Dropdown Popover (Airbnb Screenshot Style) --- */
+
+.date-picker-relative-container {
   position: relative;
   width: 100%;
+}
 
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    top: -4.5px;
-    border: 5px solid transparent;
+.calendar-dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1500;
+  background-color: transparent;
+  display: block;
+}
+
+.calendar-dropdown-content {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  background-color: #ffffff;
+  border-radius: 24px;
+  padding: 16px 20px;
+  width: 610px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  border: 1px solid #ebebeb;
+  z-index: 1600;
+  display: flex;
+  flex-direction: column;
+  color: #222222;
+}
+
+.calendar-dropdown-content .calendar-month-view {
+  max-width: 270px;
+  min-width: 240px;
+}
+
+.calendar-inputs-double-box {
+  display: flex;
+  border: 1px solid #b0b0b0;
+  border-radius: 8px;
+  overflow: visible;
+  background-color: #ffffff;
+  width: 100%;
+}
+
+.calendar-input-segment {
+  flex: 1;
+  padding: 8px 8px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  cursor: pointer;
+  border: 2px solid transparent;
+  margin: -1px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  transition: border-color 0.1s;
+}
+
+.calendar-input-segment.active {
+  border: 2px solid #222222;
+  z-index: 5;
+}
+
+.calendar-input-segment .label {
+  font-size: 9px;
+  font-weight: 800;
+  color: #222222;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+  text-align: left;
+}
+
+.calendar-input-segment .value-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.calendar-input-segment .value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #222222;
+}
+
+.clear-date-icon {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #717171;
+  cursor: pointer;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.clear-date-icon:hover {
+  background-color: #f1f1f1;
+  color: #222222;
+}
+
+@media (max-width: 768px) {
+  .calendar-dropdown-overlay {
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
   }
-
-  &::before {
+  
+  .calendar-dropdown-content {
+    position: relative;
+    top: 0;
     left: 0;
-    border-left-color: var(--border);
-  }
-  &::after {
     right: 0;
-    border-right-color: var(--border);
+    width: 100%;
+    max-width: 380px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 20px;
+    border-radius: 20px;
   }
 }
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Багатоколонковий багатий футер у стилі Airbnb */
+.app-footer {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid #ebebeb;
+  padding: 48px 0 24px;
+  margin-top: 64px;
+  font-size: 14px;
+  color: #222222;
+  gap: 32px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 32px;
+  border-bottom: 1px solid #ebebeb;
+  padding-bottom: 32px;
+}
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+
+.footer-column h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #222222;
+  margin: 0 0 4px;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.footer-column a {
+  color: #717171;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.footer-column a:hover {
+  color: #222222;
+  text-decoration: underline;
+}
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-top: 12px;
+}
+
+.footer-left {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.footer-left a {
+  color: #222222;
+  text-decoration: none;
+}
+
+.footer-left a:hover {
+  text-decoration: underline;
+}
+
+.footer-dot {
+  color: #222222;
+  font-size: 8px;
+  user-select: none;
+}
+
+.footer-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+
+
+
