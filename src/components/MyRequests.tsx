@@ -15,9 +15,6 @@ export const MyRequests: React.FC<MyRequestsProps> = ({
   return (
     <div>
       <h2>Запити на мої речі</h2>
-      <p className="text-muted" style={{ marginBottom: '15px' }}>
-        Тут відображаються запити від інших користувачів на оренду ваших речей.
-      </p>
 
       {myRequests.length === 0 ? (
         <p style={{ margin: '30px 0', color: '#666' }}>На ваші речі ще не надходило запитів.</p>

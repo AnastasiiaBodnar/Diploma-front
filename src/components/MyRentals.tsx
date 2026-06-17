@@ -24,9 +24,6 @@ export const MyRentals: React.FC<MyRentalsProps> = ({
   return (
     <div>
       <h2>Мої оренди</h2>
-      <p className="text-muted" style={{ marginBottom: '15px' }}>
-        Тут відображається список речей, які ви надіслали запит на оренду.
-      </p>
 
       {myRentals.length === 0 ? (
         <p style={{ margin: '30px 0', color: '#666' }}>Ви ще не орендували жодної речі.</p>

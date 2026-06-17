@@ -20,7 +20,6 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
         borderBottom: '1px solid #ebebeb',
         backgroundColor: '#ffffff',
         width: '100%',
-        marginBottom: '24px'
       }}
     >
       <div 
