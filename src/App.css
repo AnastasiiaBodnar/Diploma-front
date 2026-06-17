@@ -1,3 +1,10 @@
+.sticky-header-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+  background-color: #ffffff;
+}
+
 /* Шапка сайту в стилі Airbnb */
 .app-header {
   display: flex;
@@ -5,7 +12,6 @@
   align-items: center;
   border-bottom: 1px solid var(--border-color);
   padding: 16px 0 20px;
-  margin-bottom: 24px;
   flex-wrap: wrap;
   gap: 16px;
 }
@@ -152,8 +158,7 @@
   letter-spacing: 0.8px;
 }
 
-.filter-segment input,
-.filter-segment select {
+.filter-segment input {
   border: none;
   padding: 4px 0;
   font-size: 14px;
@@ -162,6 +167,25 @@
   color: var(--text-color);
   width: 100%;
   border-radius: 0;
+}
+
+.filter-segment select {
+  border: none;
+  padding: 4px 16px 4px 0;
+  font-size: 13px;
+  font-weight: 500;
+  background: transparent;
+  color: var(--text-color);
+  width: 100%;
+  border-radius: 0;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23717171' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right center;
+  background-size: 12px 12px;
 }
 
 .filter-segment input:focus,
@@ -254,7 +278,7 @@
 /* Грід оголошень у стилі Airbnb (чистий, без карток-боксовіх обводок) */
 .listings-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 32px 24px;
   margin-bottom: 48px;
 }
@@ -639,9 +663,9 @@
 
 .map-side {
   position: sticky;
-  top: 24px;
-  height: calc(100vh - 140px);
-  min-height: 480px;
+  top: 200px;
+  height: calc(100vh - 264px);
+  min-height: 380px;
 }
 
 /* Кнопка перемикання Карта/Список на мобільних пристроях */
@@ -684,16 +708,61 @@
 .map-price-marker {
   background-color: #ffffff;
   color: #222222;
-  font-size: 13px;
-  font-weight: 800;
-  padding: 4px 10px;
-  border-radius: 28px;
+  border-radius: 10px;
   border: 1px solid #dddddd;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   text-align: center;
-  white-space: nowrap;
   cursor: pointer;
   transition: transform 0.15s, background-color 0.15s, color 0.15s, box-shadow 0.15s;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 4px 6px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.marker-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: #717171;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.map-price-marker.selected .marker-title {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.map-price-marker.rented .marker-title {
+  color: rgba(26, 122, 62, 0.8);
+}
+
+.map-price-marker.rented.selected .marker-title {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.marker-price {
+  font-size: 12px;
+  font-weight: 800;
+  color: #222222;
+  line-height: 1.2;
+  margin-top: 1px;
+}
+
+.map-price-marker.selected .marker-price {
+  color: #ffffff;
+}
+
+.map-price-marker.rented .marker-price {
+  color: #1a7a3e;
+}
+
+.map-price-marker.rented.selected .marker-price {
+  color: #ffffff;
 }
 
 .map-price-marker:hover {
@@ -2071,6 +2140,106 @@
     padding: 20px;
     border-radius: 20px;
   }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Багатоколонковий багатий футер у стилі Airbnb */
+.app-footer {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid #ebebeb;
+  padding: 48px 0 24px;
+  margin-top: 64px;
+  font-size: 14px;
+  color: #222222;
+  gap: 32px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 32px;
+  border-bottom: 1px solid #ebebeb;
+  padding-bottom: 32px;
+}
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+
+.footer-column h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #222222;
+  margin: 0 0 4px;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.footer-column a {
+  color: #717171;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.footer-column a:hover {
+  color: #222222;
+  text-decoration: underline;
+}
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-top: 12px;
+}
+
+.footer-left {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.footer-left a {
+  color: #222222;
+  text-decoration: none;
+}
+
+.footer-left a:hover {
+  text-decoration: underline;
+}
+
+.footer-dot {
+  color: #222222;
+  font-size: 8px;
+  user-select: none;
+}
+
+.footer-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
 }
 
 

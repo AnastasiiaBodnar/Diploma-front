@@ -68,7 +68,7 @@ export default function MapSelector({ initialLatitude, initialLongitude, initial
         maxZoom: 20
       }).addTo(mapRef.current);
 
-      L.control.zoom({ position: 'topright' }).addTo(mapRef.current);
+
 
       // Обробка кліку по карті для встановлення маркера
       mapRef.current.on('click', async (e: L.LeafletMouseEvent) => {

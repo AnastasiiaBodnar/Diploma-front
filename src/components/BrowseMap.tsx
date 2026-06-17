@@ -68,10 +68,7 @@ export default function BrowseMap({ listings, onListingSelect, selectedListing, 
         maxZoom: 20
       }).addTo(mapRef.current);
 
-      // Додаємо гарні кнопки масштабування у правий верхній кут (як на Google Maps / Airbnb)
-      L.control.zoom({
-        position: 'topright'
-      }).addTo(mapRef.current);
+
     }
 
     return () => {
@@ -111,17 +108,17 @@ export default function BrowseMap({ listings, onListingSelect, selectedListing, 
       // Обрізаємо назву речі, щоб мітка залишалася компактною
       const displayTitle = listing.title.length > 12 ? listing.title.slice(0, 12) + '...' : listing.title;
 
-      // Створення кастомного маркера-пігулки з назвою, ціною
       const priceIcon = L.divIcon({
         html: `
           <div class="map-price-marker ${isSelected ? 'selected' : ''}">
-            <span class="marker-title-pill">${displayTitle}</span> • ${listing.price} ₴
+            <div class="marker-title">${displayTitle}</div>
+            <div class="marker-price">${listing.price} ₴</div>
           </div>
         `,
         className: 'map-price-marker-container',
-        iconSize: [140, 28],
-        iconAnchor: [70, 14],
-        popupAnchor: [0, -14]
+        iconSize: [120, 44],
+        iconAnchor: [60, 22],
+        popupAnchor: [0, -22]
       });
 
       const marker = L.marker([lat, lng], { icon: priceIcon }).addTo(map);
@@ -160,6 +157,10 @@ export default function BrowseMap({ listings, onListingSelect, selectedListing, 
       marker.on('click', () => {
         // Оновити виділене оголошення
         onListingSelect(listing);
+      });
+
+      marker.on('mouseover', () => {
+        marker.openPopup();
       });
 
       markersRef.current[listing.id] = marker;

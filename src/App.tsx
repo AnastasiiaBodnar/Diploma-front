@@ -389,6 +389,8 @@ function App() {
   const [mySearchQuery, setMySearchQuery] = useState<string>('');
   const [myCategoryFilter, setMyCategoryFilter] = useState<string>('');
   const [myStatusFilter, setMyStatusFilter] = useState<string>('all'); // all, active, repair
+  const [showMyCategoryDropdown, setShowMyCategoryDropdown] = useState<boolean>(false);
+  const [showMyStatusDropdown, setShowMyStatusDropdown] = useState<boolean>(false);
 
   // Модалка перегляду
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
@@ -705,6 +707,10 @@ function App() {
       }
       if (!target.closest('.notifications-container')) {
         setIsNotificationsOpen(false);
+      }
+      if (!target.closest('.rozetka-filter-segment')) {
+        setShowMyCategoryDropdown(false);
+        setShowMyStatusDropdown(false);
       }
     };
     document.addEventListener('click', handleOutsideClick);
@@ -1657,8 +1663,9 @@ function App() {
 
   return (
     <div className="app-container">
-      {/* Шапка сайту в стилі Airbnb */}
-      <header className="app-header" style={{
+      <div className="sticky-header-wrapper">
+        {/* Шапка сайту в стилі Airbnb */}
+        <header className="app-header" style={{
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -2354,12 +2361,99 @@ function App() {
           })}
         </div>
       )}
+      </div>
 
 
-      {/* Системні сповіщення */}
-      {errorMsg && <div className="alert alert-error">{errorMsg}</div>}
-      {successMsg && <div className="alert alert-success">{successMsg}</div>}
-      {loading && <div className="alert alert-info">Завантаження...</div>}
+      {/* Системні сповіщення (у вигляді неінвазивних плаваючих тостів, що не зсувають контент) */}
+      {(successMsg || errorMsg) && (
+        <div 
+          style={{
+            position: 'fixed',
+            bottom: '24px',
+            right: '24px',
+            zIndex: 9999,
+            backgroundColor: '#ffffff',
+            borderRadius: '12px',
+            boxShadow: '0 6px 20px rgba(0,0,0,0.15)',
+            borderLeft: `6px solid ${successMsg ? '#10B981' : '#EF4444'}`,
+            padding: '16px 20px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            maxWidth: '350px',
+            animation: 'slideIn 0.3s ease-out'
+          }}
+        >
+          {successMsg ? (
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#10B981" strokeWidth="2.5">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#EF4444" strokeWidth="2.5">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+          )}
+          <span style={{ fontSize: '14px', fontWeight: 500, color: '#222222' }}>
+            {successMsg || errorMsg}
+          </span>
+          <button 
+            type="button"
+            onClick={() => {
+              setSuccessMsg(null);
+              setErrorMsg(null);
+            }}
+            style={{
+              background: 'none',
+              border: 'none',
+              fontSize: '18px',
+              color: '#717171',
+              cursor: 'pointer',
+              marginLeft: 'auto',
+              padding: '0 4px',
+              lineHeight: 1
+            }}
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+      {loading && (
+        <div 
+          style={{
+            position: 'fixed',
+            bottom: '24px',
+            right: '24px',
+            zIndex: 9999,
+            backgroundColor: '#ffffff',
+            borderRadius: '12px',
+            boxShadow: '0 6px 20px rgba(0,0,0,0.15)',
+            borderLeft: '6px solid #3B82F6',
+            padding: '16px 20px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            maxWidth: '350px',
+            animation: 'slideIn 0.3s ease-out'
+          }}
+        >
+          <div style={{
+            width: '20px',
+            height: '20px',
+            border: '3px solid #f3f3f3',
+            borderTop: '3px solid #3B82F6',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            flexShrink: 0
+          }} />
+          <span style={{ fontSize: '14px', fontWeight: 500, color: '#222222' }}>
+            Завантаження...
+          </span>
+        </div>
+      )}
 
       {!selectedListing ? (
         <>
@@ -2979,28 +3073,200 @@ function App() {
                       className="rozetka-filter-input"
                     />
                   </div>
-                  <div style={{ flex: '1', minWidth: '150px' }}>
-                    <select 
-                      value={myCategoryFilter} 
-                      onChange={(e) => setMyCategoryFilter(e.target.value)}
+                  <div 
+                    className="rozetka-filter-segment" 
+                    style={{ flex: '1', minWidth: '150px', position: 'relative', cursor: 'pointer' }}
+                    onClick={() => setShowMyCategoryDropdown(!showMyCategoryDropdown)}
+                  >
+                    <div 
                       className="rozetka-filter-input"
+                      style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'space-between',
+                        borderColor: showMyCategoryDropdown ? '#00a046' : '#d2d2d2',
+                        boxShadow: showMyCategoryDropdown ? '0 0 0 1px #00a046' : 'none'
+                      }}
                     >
-                      <option value="">Всі категорії</option>
-                      {categories.map(cat => (
-                        <option key={cat.id} value={cat.id}>{cat.name}</option>
-                      ))}
-                    </select>
+                      <span>
+                        {myCategoryFilter ? (categories.find(c => String(c.id) === String(myCategoryFilter))?.name || 'Всі категорії') : 'Всі категорії'}
+                      </span>
+                      <svg 
+                        viewBox="0 0 24 24" 
+                        width="14" 
+                        height="14" 
+                        fill="none" 
+                        stroke="#717171" 
+                        strokeWidth="2.5" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round"
+                        style={{ 
+                          transform: showMyCategoryDropdown ? 'rotate(180deg)' : 'rotate(0deg)',
+                          transition: 'transform 0.2s'
+                        }}
+                      >
+                        <path d="M6 9l6 6 6-6" />
+                      </svg>
+                    </div>
+
+                    {showMyCategoryDropdown && (
+                      <ul 
+                        className="rozetka-custom-dropdown"
+                        style={{
+                          position: 'absolute',
+                          top: '100%',
+                          left: 0,
+                          right: 0,
+                          backgroundColor: '#ffffff',
+                          borderRadius: '4px',
+                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                          border: '1px solid #d2d2d2',
+                          marginTop: '4px',
+                          padding: '4px 0',
+                          listStyle: 'none',
+                          zIndex: 1030,
+                          maxHeight: '260px',
+                          overflowY: 'auto'
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <li 
+                          onClick={() => {
+                            setMyCategoryFilter('');
+                            setShowMyCategoryDropdown(false);
+                          }}
+                          style={{
+                            padding: '8px 12px',
+                            cursor: 'pointer',
+                            backgroundColor: myCategoryFilter === '' ? '#f5f5f5' : 'transparent',
+                            fontWeight: myCategoryFilter === '' ? 600 : 500,
+                            fontSize: '13px',
+                            color: myCategoryFilter === '' ? '#00a046' : '#221f1f',
+                            transition: 'background-color 0.1s'
+                          }}
+                          onMouseEnter={(e) => { if (myCategoryFilter !== '') e.currentTarget.style.backgroundColor = '#f5f5f5'; }}
+                          onMouseLeave={(e) => { if (myCategoryFilter !== '') e.currentTarget.style.backgroundColor = 'transparent'; }}
+                        >
+                          Всі категорії
+                        </li>
+                        {categories.map((cat) => {
+                          const isSelected = String(myCategoryFilter) === String(cat.id);
+                          return (
+                            <li 
+                              key={cat.id}
+                              onClick={() => {
+                                setMyCategoryFilter(String(cat.id));
+                                setShowMyCategoryDropdown(false);
+                              }}
+                              style={{
+                                padding: '8px 12px',
+                                cursor: 'pointer',
+                                backgroundColor: isSelected ? '#f5f5f5' : 'transparent',
+                                fontWeight: isSelected ? 600 : 500,
+                                fontSize: '13px',
+                                color: isSelected ? '#00a046' : '#221f1f',
+                                transition: 'background-color 0.1s'
+                              }}
+                              onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = '#f5f5f5'; }}
+                              onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'; }}
+                            >
+                              {cat.name}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
                   </div>
-                  <div style={{ flex: '1', minWidth: '150px' }}>
-                    <select 
-                      value={myStatusFilter} 
-                      onChange={(e) => setMyStatusFilter(e.target.value)}
+                  <div 
+                    className="rozetka-filter-segment" 
+                    style={{ flex: '1', minWidth: '150px', position: 'relative', cursor: 'pointer' }}
+                    onClick={() => setShowMyStatusDropdown(!showMyStatusDropdown)}
+                  >
+                    <div 
                       className="rozetka-filter-input"
+                      style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'space-between',
+                        borderColor: showMyStatusDropdown ? '#00a046' : '#d2d2d2',
+                        boxShadow: showMyStatusDropdown ? '0 0 0 1px #00a046' : 'none'
+                      }}
                     >
-                      <option value="all">Будь-який статус</option>
-                      <option value="active">Справний (Активний)</option>
-                      <option value="repair">На ремонті</option>
-                    </select>
+                      <span>
+                        {myStatusFilter === 'all' && 'Будь-який статус'}
+                        {myStatusFilter === 'active' && 'Справний (Активний)'}
+                        {myStatusFilter === 'repair' && 'На ремонті'}
+                      </span>
+                      <svg 
+                        viewBox="0 0 24 24" 
+                        width="14" 
+                        height="14" 
+                        fill="none" 
+                        stroke="#717171" 
+                        strokeWidth="2.5" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round"
+                        style={{ 
+                          transform: showMyStatusDropdown ? 'rotate(180deg)' : 'rotate(0deg)',
+                          transition: 'transform 0.2s'
+                        }}
+                      >
+                        <path d="M6 9l6 6 6-6" />
+                      </svg>
+                    </div>
+
+                    {showMyStatusDropdown && (
+                      <ul 
+                        className="rozetka-custom-dropdown"
+                        style={{
+                          position: 'absolute',
+                          top: '100%',
+                          left: 0,
+                          right: 0,
+                          backgroundColor: '#ffffff',
+                          borderRadius: '4px',
+                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                          border: '1px solid #d2d2d2',
+                          marginTop: '4px',
+                          padding: '4px 0',
+                          listStyle: 'none',
+                          zIndex: 1030,
+                          maxHeight: '200px',
+                          overflowY: 'auto'
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {[
+                          { value: 'all', label: 'Будь-який статус' },
+                          { value: 'active', label: 'Справний (Активний)' },
+                          { value: 'repair', label: 'На ремонті' }
+                        ].map((status) => {
+                          const isSelected = myStatusFilter === status.value;
+                          return (
+                            <li 
+                              key={status.value}
+                              onClick={() => {
+                                setMyStatusFilter(status.value);
+                                setShowMyStatusDropdown(false);
+                              }}
+                              style={{
+                                padding: '8px 12px',
+                                cursor: 'pointer',
+                                backgroundColor: isSelected ? '#f5f5f5' : 'transparent',
+                                fontWeight: isSelected ? 600 : 500,
+                                fontSize: '13px',
+                                color: isSelected ? '#00a046' : '#221f1f',
+                                transition: 'background-color 0.1s'
+                              }}
+                              onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = '#f5f5f5'; }}
+                              onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'; }}
+                            >
+                              {status.label}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
                   </div>
                 </div>
               );
@@ -3510,7 +3776,7 @@ function App() {
                 <div className="map-section" style={{ padding: '24px 0', borderBottom: '1px solid #ebebeb' }}>
                   <h3 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '16px' }}>Де ви будете</h3>
                   <p className="text-muted" style={{ marginBottom: '16px' }}>Локація: {selectedListing.location}</p>
-                  <div style={{ height: '380px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #ebebeb' }}>
+                  <div style={{ height: '350px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #ebebeb' }}>
                     <BrowseMap 
                       listings={[selectedListing]} 
                       onListingSelect={() => {}} 
@@ -4342,6 +4608,55 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* Багатий футер у стилі Airbnb */}
+      <footer className="app-footer">
+        <div className="footer-grid">
+          <div className="footer-column">
+            <h4>RentLocal</h4>
+            <a href="#about">Про нас</a>
+            <a href="#careers">Кар'єра</a>
+            <a href="#news">Новини RentLocal</a>
+            <a href="#features">Особливості сервісу</a>
+          </div>
+          <div className="footer-column">
+            <h4>Оренда речей</h4>
+            <a href="#how-it-works">Як орендувати</a>
+            <a href="#safety">Безпечна оренда</a>
+            <a href="#rules">Правила спільноти</a>
+            <a href="#insurance">Страхування та застава</a>
+          </div>
+          <div className="footer-column">
+            <h4>Підтримка</h4>
+            <a href="mailto:bodnar.anastasiia.2007@gmail.com" style={{ fontWeight: 600, color: '#10B981' }}>
+              bodnar.anastasiia.2007@gmail.com
+            </a>
+            <a href="#help-center">Центр допомоги</a>
+            <a href="#report">Повідомити про проблему</a>
+            <a href="#trust">Довіра та безпека</a>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <div className="footer-left">
+            <span>© {new Date().getFullYear()} RentLocal, Inc.</span>
+            <span className="footer-dot">•</span>
+            <a href="#privacy">Конфіденційність</a>
+            <span className="footer-dot">•</span>
+            <a href="#terms">Умови</a>
+            <span className="footer-dot">•</span>
+            <a href="#sitemap">Карта сайту</a>
+          </div>
+          <div className="footer-right">
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
+              <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="presentation" focusable="false" style={{ display: 'block', height: '16px', width: '16px', fill: 'currentColor' }}>
+                <path d="m8.002.25a7.77 7.77 0 0 1 7.748 7.776 7.75 7.75 0 0 1 -7.521 7.72l-.246.004a7.75 7.75 0 0 1 -7.73-7.502l-.018-.274a7.75 7.75 0 0 1 7.747-7.724zm0 1.5a6.25 6.25 0 1 0 0 12.5 6.25 6.25 0 0 0 0-12.5zm0 1a4.93 4.93 0 0 1 1.75 3.75h-3.5a4.93 4.93 0 0 1 1.75-3.75zm1.75 5.25h-3.5a4.93 4.93 0 0 1 1.75 3.75 4.93 4.93 0 0 1 -1.75-3.75zm3.72-1.5c-.29-1.57-.96-2.95-1.92-3.93a6.2 6.2 0 0 1 1.92 3.93zm-9.04 0h-1.68a6.2 6.2 0 0 1 1.68-3.93 6.22 6.22 0 0 0 -1.68 3.93zm9.04 1.5a6.2 6.2 0 0 1 -1.92 3.93c.96-.98 1.63-2.36 1.92-3.93zm-9.04 0a6.22 6.22 0 0 0 1.68 3.93 6.2 6.2 0 0 1 -1.68-3.93z"></path>
+              </svg>
+              Українська (UA)
+            </span>
+            <span style={{ fontWeight: 600 }}>₴ UAH</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
