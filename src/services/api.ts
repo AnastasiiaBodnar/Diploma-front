@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string) || 'http://localhost:5000/api';
 
 // Допоміжна функція для отримання заголовків з токеном авторизації
 function getHeaders(isMultipart = false): HeadersInit {
