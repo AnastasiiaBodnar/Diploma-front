@@ -1961,14 +1961,21 @@
   top: calc(100% + 8px);
   background-color: #ffffff;
   border-radius: 24px;
-  padding: 24px;
-  width: 660px;
+  padding: 16px 20px;
+  width: 610px;
+  max-height: 80vh;
+  overflow-y: auto;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
   border: 1px solid #ebebeb;
   z-index: 1600;
   display: flex;
   flex-direction: column;
   color: #222222;
+}
+
+.calendar-dropdown-content .calendar-month-view {
+  max-width: 270px;
+  min-width: 240px;
 }
 
 .calendar-inputs-double-box {
@@ -1982,7 +1989,7 @@
 
 .calendar-input-segment {
   flex: 1;
-  padding: 8px 12px;
+  padding: 8px 8px;
   display: flex;
   flex-direction: column;
   position: relative;

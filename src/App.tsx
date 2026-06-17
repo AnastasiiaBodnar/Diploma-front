@@ -2240,14 +2240,6 @@ function App() {
                     >
                       Запити на оренду
                     </button>
-                     <button 
-                      onClick={() => { setActiveView('favorites'); setSelectedListing(null); }}
-                      style={{ background: 'none', border: 'none', padding: '10px 16px', fontSize: '13px', textAlign: 'left', width: '100%', cursor: 'pointer', fontWeight: 500 }}
-                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f7f7f7'; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-                    >
-                      Обране
-                    </button>
                     <button 
                       onClick={handleLogout}
                       style={{ background: 'none', border: 'none', padding: '10px 16px', fontSize: '13px', textAlign: 'left', width: '100%', cursor: 'pointer', fontWeight: 500, color: '#10B981', borderTop: '1px solid #f0f0f0', marginTop: '4px' }}
@@ -2274,16 +2266,6 @@ function App() {
                       onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                     >
                       Зареєструватися
-                    </button>
-                     <button 
-                      onClick={() => {
-                        handleGuestAction();
-                      }}
-                      style={{ background: 'none', border: 'none', padding: '10px 16px', fontSize: '13px', textAlign: 'left', width: '100%', cursor: 'pointer', fontWeight: 500, borderTop: '1px solid #f0f0f0', marginTop: '4px' }}
-                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f7f7f7'; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-                    >
-                      Обране
                     </button>
                   </>
                 )}
@@ -3586,7 +3568,7 @@ function App() {
                         <>
                           <div className="calendar-dropdown-overlay" onClick={() => setIsCalendarOpen(false)} />
                           <div className="calendar-dropdown-content" onClick={(e) => e.stopPropagation()}>
-                            <div className="calendar-modal-header" style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <div className="calendar-modal-header" style={{ marginBottom: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                               <div className="calendar-nights-info" style={{ textAlign: 'left' }}>
                                 {calculateSelectedNights() > 0 ? (
                                   <>
@@ -3610,7 +3592,7 @@ function App() {
                                 )}
                               </div>
 
-                              <div style={{ width: '280px' }}>
+                              <div style={{ width: '310px' }}>
                                 <div className="calendar-inputs-double-box">
                                   <div 
                                     className={`calendar-input-segment ${(!startDate || (startDate && endDate)) ? 'active' : ''}`}
@@ -3683,7 +3665,7 @@ function App() {
                               )}
                             </div>
 
-                            <div className="calendar-modal-footer" style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #ebebeb', paddingTop: '12px' }}>
+                            <div className="calendar-modal-footer" style={{ marginTop: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #ebebeb', paddingTop: '12px' }}>
                               <div>
                                 {(startDate || endDate) && (
                                   <button 
