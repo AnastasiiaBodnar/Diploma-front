@@ -15,19 +15,28 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
 }) => {
   return (
     <div 
-      className="categories-bar" 
+      className="categories-bar-wrapper" 
       style={{
-        display: 'flex',
-        gap: '24px',
-        padding: '12px 24px 8px',
         borderBottom: '1px solid #ebebeb',
-        overflowX: 'auto',
         backgroundColor: '#ffffff',
-        scrollbarWidth: 'none',
-        msOverflowStyle: 'none',
+        width: '100%',
         marginBottom: '24px'
       }}
     >
+      <div 
+        className="categories-bar" 
+        style={{
+          display: 'flex',
+          gap: '24px',
+          padding: '12px 24px 8px',
+          overflowX: 'auto',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+          maxWidth: '1440px',
+          margin: '0 auto',
+          width: '100%'
+        }}
+      >
       {/* Категорія "Усі" */}
       <button 
         onClick={() => setSelectedCategory('')}
@@ -87,6 +96,7 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
           </button>
         );
       })}
+      </div>
     </div>
   );
 };

@@ -25,6 +25,7 @@ import { EditListingModal } from './components/EditListingModal';
 import { Lightbox } from './components/Lightbox';
 import { RepairModal } from './components/RepairModal';
 import { ConfirmModal } from './components/ConfirmModal';
+import { Footer } from './components/Footer';
 
 function App() {
   // Користувач та авторизація
@@ -1335,6 +1336,8 @@ function App() {
         confirmAction={confirmAction}
         setConfirmAction={setConfirmAction}
       />
+
+      <Footer />
     </div>
   );
 }

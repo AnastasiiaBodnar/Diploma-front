@@ -83,12 +83,20 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="app-header" style={{
+      borderBottom: '1px solid #ebebeb',
+      backgroundColor: '#ffffff',
+      width: '100%',
+      padding: '16px 24px',
+    }}>
+      <div style={{
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: '16px 24px',
-        borderBottom: '1px solid #ebebeb',
-        backgroundColor: '#ffffff',
+        width: '100%',
+        maxWidth: '1440px',
+        margin: '0 auto',
+        flexWrap: 'wrap',
+        gap: '16px'
       }}>
         {/* Логотип */}
         <div 
@@ -598,6 +606,7 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </div>
         </div>
-      </header>
+      </div>
+    </header>
   );
 };
