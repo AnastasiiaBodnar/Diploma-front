@@ -462,6 +462,8 @@
   position: sticky;
   top: 24px;
   z-index: 1010;
+  align-self: start;
+  height: fit-content;
 }
 
 .booking-box h3 {
