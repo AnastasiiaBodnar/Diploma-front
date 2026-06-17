@@ -1,6 +1,18 @@
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string) || 'http://localhost:5000/api';
 
+// Перехоплення помилок мережі (наприклад, холодний старт сервера Render) для виведення зрозумілого повідомлення українською
+const originalFetch = window.fetch;
+window.fetch = async (...args) => {
+  try {
+    return await originalFetch(...args);
+  } catch (err: any) {
+    console.error('Network fetch error caught:', err);
+    throw new Error('Помилка з’єднання з сервером. Можливо, сервер прокидається (холодний старт Render). Будь ласка, зачекайте 1 хвилину та спробуйте ще раз.');
+  }
+};
+
 // Допоміжна функція для отримання заголовків з токеном авторизації
+
 function getHeaders(isMultipart = false): HeadersInit {
   const token = localStorage.getItem('rentlocal_token');
   const headers: Record<string, string> = {};
