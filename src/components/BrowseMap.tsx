@@ -97,6 +97,7 @@ export default function BrowseMap({ listings, onListingSelect, selectedListing, 
     if (listingsWithCoords.length === 0) return;
 
     const bounds: L.LatLngExpression[] = [];
+    const activeTimeouts: any[] = [];
 
     listingsWithCoords.forEach(listing => {
       const lat = listing.latitude as number;
@@ -159,9 +160,32 @@ export default function BrowseMap({ listings, onListingSelect, selectedListing, 
         onListingSelect(listing);
       });
 
-      marker.on('mouseover', () => {
-        marker.openPopup();
+      let closeTimeout: any = null;
+
+      const openPopup = () => {
+        clearTimeout(closeTimeout);
+        if (!marker.isPopupOpen()) {
+          marker.openPopup();
+        }
+      };
+
+      const closePopup = () => {
+        if (selectedListing?.id === listing.id) return;
+        clearTimeout(closeTimeout);
+        closeTimeout = setTimeout(() => {
+          marker.closePopup();
+        }, 300);
+        activeTimeouts.push(closeTimeout);
+      };
+
+      marker.on('mouseover', openPopup);
+      marker.on('mouseout', closePopup);
+
+      popupContent.addEventListener('mouseenter', () => {
+        clearTimeout(closeTimeout);
       });
+
+      popupContent.addEventListener('mouseleave', closePopup);
 
       markersRef.current[listing.id] = marker;
     });
@@ -173,6 +197,10 @@ export default function BrowseMap({ listings, onListingSelect, selectedListing, 
         maxZoom: 15
       });
     }
+
+    return () => {
+      activeTimeouts.forEach(t => clearTimeout(t));
+    };
   }, [listings, selectedListing, onListingSelect]);
 
   // Сфокусувати на маркері, якщо оголошення вибрано ззовні
