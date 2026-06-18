@@ -6,7 +6,7 @@ export const Footer: React.FC = () => {
       className="app-footer" 
       style={{
         backgroundColor: '#f7f7f7',
-        padding: '48px 24px 24px 24px',
+        padding: '24px 40px 16px 40px',
         marginTop: 'auto',
         borderTop: '1px solid #ebebeb',
       }}
@@ -37,14 +37,9 @@ export const Footer: React.FC = () => {
           <span style={{ color: '#717171', fontSize: '14px' }}>для оренди речей</span>
         </div>
 
-        {/* Column 2 */}
-        <div className="footer-column">
-          <h4>Про нас</h4>
-          <a href="#how-it-works">Як працює?</a>
-        </div>
 
         {/* Column 3 */}
-        <div className="footer-column">
+        <div className="footer-column" style={{ justifySelf: 'end' }}>
           <h4>Підтримка</h4>
           <a href="mailto:Bodnar.anastasiia.2007@gmail.com">Bodnar.anastasiia.2007@gmail.com</a>
         </div>
