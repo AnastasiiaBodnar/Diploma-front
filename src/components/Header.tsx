@@ -80,6 +80,7 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
 
   return (
     <header className="app-header" style={{
@@ -210,20 +211,145 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
 
               {/* Категорія */}
-              <div className="filter-segment" style={{ flex: 1.2, minWidth: '100px', borderRight: '1px solid #ebebeb', paddingRight: '12px', marginRight: '8px' }}>
-                <label style={{ display: 'block', fontSize: '9px', fontWeight: 800, color: '#222222', textTransform: 'uppercase', marginBottom: '2px', letterSpacing: '0.8px' }}>
+              <div 
+                className="filter-segment" 
+                style={{ 
+                  flex: 1.2, 
+                  minWidth: '120px', 
+                  borderRight: '1px solid #ebebeb', 
+                  paddingRight: '12px', 
+                  marginRight: '8px',
+                  position: 'relative',
+                  cursor: 'pointer',
+                  userSelect: 'none'
+                }}
+                onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+              >
+                <label style={{ display: 'block', fontSize: '9px', fontWeight: 800, color: '#222222', textTransform: 'uppercase', marginBottom: '2px', letterSpacing: '0.8px', cursor: 'pointer' }}>
                   Категорія
                 </label>
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  style={{ border: 'none', padding: '4px 0', fontSize: '13px', fontWeight: 500, background: 'transparent', color: '#222222', width: '100%', outline: 'none', cursor: 'pointer' }}
-                >
-                  <option value="">Усі категорії</option>
-                  {categories.map(c => (
-                    <option key={c.id} value={c.slug}>{c.name}</option>
-                  ))}
-                </select>
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'space-between', 
+                  padding: '4px 0', 
+                  fontSize: '13px', 
+                  fontWeight: 500, 
+                  color: showCategoryDropdown || selectedCategory ? '#10B981' : '#222222',
+                  transition: 'color 0.15s'
+                }}>
+                  <span style={{ 
+                    whiteSpace: 'nowrap', 
+                    overflow: 'hidden', 
+                    textOverflow: 'ellipsis',
+                    maxWidth: '120px'
+                  }}>
+                    {selectedCategory ? (categories.find(c => c.slug === selectedCategory)?.name || 'Усі категорії') : 'Усі категорії'}
+                  </span>
+                  <svg 
+                    viewBox="0 0 24 24" 
+                    width="14" 
+                    height="14" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2.5" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                    style={{ 
+                      transform: showCategoryDropdown ? 'rotate(180deg)' : 'rotate(0deg)',
+                      transition: 'transform 0.2s',
+                      marginLeft: '4px',
+                      flexShrink: 0
+                    }}
+                  >
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </div>
+
+                {showCategoryDropdown && (
+                  <>
+                    <div 
+                      style={{
+                        position: 'fixed',
+                        top: 0,
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        zIndex: 1035,
+                        cursor: 'default'
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowCategoryDropdown(false);
+                      }}
+                    />
+                    <ul 
+                      className="custom-dropdown-menu"
+                      style={{
+                        position: 'absolute',
+                        top: '100%',
+                        left: '-12px',
+                        right: '-12px',
+                        backgroundColor: '#ffffff',
+                        borderRadius: '12px',
+                        boxShadow: '0 8px 28px rgba(0, 0, 0, 0.15)',
+                        border: '1px solid #dddddd',
+                        marginTop: '12px',
+                        padding: '8px 0',
+                        listStyle: 'none',
+                        zIndex: 1040,
+                        maxHeight: '260px',
+                        overflowY: 'auto'
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <li 
+                        onClick={() => {
+                          setSelectedCategory('');
+                          setShowCategoryDropdown(false);
+                        }}
+                        style={{
+                          padding: '8px 16px',
+                          cursor: 'pointer',
+                          backgroundColor: selectedCategory === '' ? '#f5f5f5' : 'transparent',
+                          fontWeight: selectedCategory === '' ? 600 : 500,
+                          fontSize: '13px',
+                          color: selectedCategory === '' ? '#10B981' : '#222222',
+                          transition: 'background-color 0.15s'
+                        }}
+                        onMouseEnter={(e) => { if (selectedCategory !== '') e.currentTarget.style.backgroundColor = '#f5f5f5'; }}
+                        onMouseLeave={(e) => { if (selectedCategory !== '') e.currentTarget.style.backgroundColor = 'transparent'; }}
+                      >
+                        Усі категорії
+                      </li>
+                      {categories.map((cat) => {
+                        const isSelected = selectedCategory === cat.slug;
+                        return (
+                          <li 
+                            key={cat.id}
+                            onClick={() => {
+                              setSelectedCategory(cat.slug);
+                              setShowCategoryDropdown(false);
+                            }}
+                            style={{
+                              padding: '8px 16px',
+                              cursor: 'pointer',
+                              backgroundColor: isSelected ? '#f5f5f5' : 'transparent',
+                              fontWeight: isSelected ? 600 : 500,
+                              fontSize: '13px',
+                              color: isSelected ? '#10B981' : '#222222',
+                              transition: 'background-color 0.15s'
+                            }}
+                            onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = '#f5f5f5'; }}
+                            onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'; }}
+                          >
+                            {cat.name}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </>
+                )}
               </div>
 
               {/* Ціна від і до */}
