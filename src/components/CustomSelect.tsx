@@ -11,7 +11,6 @@ interface CustomSelectProps {
   onChange: (val: string) => void;
   options: Option[];
   placeholder?: string;
-  required?: boolean;
 }
 
 export const CustomSelect: React.FC<CustomSelectProps> = ({
@@ -20,7 +19,6 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   onChange,
   options,
   placeholder = 'Оберіть значення',
-  required = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
