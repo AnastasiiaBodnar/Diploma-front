@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import { authAPI, categoryAPI, listingAPI, bookingAPI, notificationAPI, reviewAPI, favoriteAPI } from './services/api';
 import type { ListingFilters } from './services/api';
@@ -593,7 +593,7 @@ function App() {
   };
 
   // Вхід через Google
-  const handleGoogleCredentialResponse = async (response: any) => {
+  const handleGoogleCredentialResponse = useCallback(async (response: any) => {
     setLoading(true);
     setErrorMsg(null);
     try {
@@ -611,7 +611,7 @@ function App() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Вихід з акаунту
   const handleLogout = () => {

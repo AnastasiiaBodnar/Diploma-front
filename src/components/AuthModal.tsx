@@ -53,7 +53,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         }
       }, 50);
     }
-  }, [isAuthOpen, authMode, handleGoogleCredentialResponse]);
+  }, [isAuthOpen, handleGoogleCredentialResponse]);
 
   if (!isAuthOpen) return null;
 
