@@ -2,6 +2,7 @@ import React from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import type { Category } from '../types';
 import MapSelector from './MapSelector';
+import { CustomSelect } from './CustomSelect';
 
 interface CreateListingProps {
   categories: Category[];
@@ -84,17 +85,13 @@ export const CreateListing: React.FC<CreateListingProps> = ({
 
         <div className="form-group">
           <label htmlFor="categoryId">Категорія *</label>
-          <select 
+          <CustomSelect
             id="categoryId"
-            required
             value={newCategoryId}
-            onChange={(e: ChangeEvent<HTMLSelectElement>) => setNewCategoryId(e.target.value)}
-          >
-            <option value="">Оберіть категорію</option>
-            {categories.map(c => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
+            onChange={setNewCategoryId}
+            options={categories.map(c => ({ value: String(c.id), label: c.name }))}
+            placeholder="Оберіть категорію"
+          />
         </div>
 
         <div className="form-group">
@@ -219,31 +216,27 @@ export const CreateListing: React.FC<CreateListingProps> = ({
         <div style={{ display: 'flex', gap: '15px', margin: '15px 0' }}>
           <div className="form-group" style={{ flex: 1 }}>
             <label htmlFor="newCheckInTime">Час отримання (Check-in)</label>
-            <select 
+            <CustomSelect 
               id="newCheckInTime"
               value={newCheckInTime}
-              onChange={(e) => setNewCheckInTime(e.target.value)}
-              style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ccc' }}
-            >
-              {Array.from({ length: 24 }).map((_, h) => {
+              onChange={setNewCheckInTime}
+              options={Array.from({ length: 24 }).map((_, h) => {
                 const time = `${String(h).padStart(2, '0')}:00`;
-                return <option key={time} value={time}>{time}</option>;
+                return { value: time, label: time };
               })}
-            </select>
+            />
           </div>
           <div className="form-group" style={{ flex: 1 }}>
             <label htmlFor="newCheckOutTime">Час повернення (Check-out)</label>
-            <select 
+            <CustomSelect 
               id="newCheckOutTime"
               value={newCheckOutTime}
-              onChange={(e) => setNewCheckOutTime(e.target.value)}
-              style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ccc' }}
-            >
-              {Array.from({ length: 24 }).map((_, h) => {
+              onChange={setNewCheckOutTime}
+              options={Array.from({ length: 24 }).map((_, h) => {
                 const time = `${String(h).padStart(2, '0')}:00`;
-                return <option key={time} value={time}>{time}</option>;
+                return { value: time, label: time };
               })}
-            </select>
+            />
           </div>
         </div>
 
