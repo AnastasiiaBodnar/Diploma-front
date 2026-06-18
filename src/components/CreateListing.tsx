@@ -111,7 +111,7 @@ export const CreateListing: React.FC<CreateListingProps> = ({
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
           <div className="form-group">
-            <label htmlFor="price">Ціна за добу (грн) *</label>
+            <label htmlFor="price">Ціна за ніч (грн) *</label>
             <input 
               type="number" 
               id="price"

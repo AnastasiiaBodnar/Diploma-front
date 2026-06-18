@@ -271,9 +271,9 @@ export const Calendar: React.FC<CalendarProps> = ({
             <strong>
               {(() => {
                 const n = calculateSelectedNights();
-                if (n % 10 === 1 && n % 100 !== 11) return `${n} доба`;
-                if ([2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100)) return `${n} доби`;
-                return `${n} діб`;
+                if (n % 10 === 1 && n % 100 !== 11) return `${n} ніч`;
+                if ([2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100)) return `${n} ночі`;
+                return `${n} ночей`;
               })()}
             </strong>{' '}
             ({formatCalendarDate(startDate)} — {formatCalendarDate(endDate)})

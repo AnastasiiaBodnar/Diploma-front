@@ -287,7 +287,7 @@ export const MyListings: React.FC<MyListingsProps> = ({
                   <tr>
                     <th>Оголошення</th>
                     <th>Категорія</th>
-                    <th>Ціна за добу</th>
+                    <th>Ціна за ніч</th>
                     <th>Застава</th>
                     <th>Дата додавання</th>
                     <th>Дії</th>

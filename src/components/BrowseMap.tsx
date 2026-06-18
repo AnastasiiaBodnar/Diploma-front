@@ -132,7 +132,7 @@ export default function BrowseMap({ listings, onListingSelect, selectedListing, 
         <div class="map-popup-category">${listing.category?.name || ''} • ${listing.location}</div>
         <div class="map-popup-price-row">
           <span class="map-popup-price">
-            ${listing.price} ₴ <span class="map-popup-price-unit">/ добу</span>
+            ${listing.price} ₴ <span class="map-popup-price-unit">/ ніч</span>
           </span>
           <button class="map-popup-btn" id="popup-btn-${listing.id}">Переглянути</button>
         </div>

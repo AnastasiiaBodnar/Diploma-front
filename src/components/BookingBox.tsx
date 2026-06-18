@@ -74,7 +74,7 @@ export const BookingBox: React.FC<BookingBoxProps> = ({
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '16px' }}>
         <div>
           <span style={{ fontSize: '22px', fontWeight: 800 }}>{selectedListing.price} грн</span>
-          <span style={{ fontSize: '14px', color: '#717171' }}> / доба</span>
+          <span style={{ fontSize: '14px', color: '#717171' }}> / ніч</span>
         </div>
         <div style={{ fontSize: '14px', fontWeight: 600 }}>
           ★ {selectedListing.avgRating !== null && selectedListing.avgRating !== undefined ? (
@@ -119,14 +119,11 @@ export const BookingBox: React.FC<BookingBoxProps> = ({
                           <h2 style={{ margin: '0 0 4px 0', fontSize: '22px', fontWeight: 700 }}>
                             {(() => {
                               const n = calculateSelectedNights();
-                              if (n % 10 === 1 && n % 100 !== 11) return `${n} доба`;
-                              if ([2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100)) return `${n} доби`;
-                              return `${n} діб`;
+                              if (n % 10 === 1 && n % 100 !== 11) return `${n} ніч`;
+                              if ([2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100)) return `${n} ночі`;
+                              return `${n} ночей`;
                             })()}
                           </h2>
-                          <p style={{ margin: 0, fontSize: '13px', color: '#717171' }}>
-                            {formatCalendarDate(startDate)} — {formatCalendarDate(endDate)}
-                          </p>
                         </>
                       ) : (
                         <>
@@ -136,7 +133,7 @@ export const BookingBox: React.FC<BookingBoxProps> = ({
                       )}
                     </div>
 
-                    <div style={{ width: '310px' }}>
+                    <div style={{ width: '320px' }}>
                       <div className="calendar-inputs-double-box">
                         <div 
                           className={`calendar-input-segment ${(!startDate || (startDate && endDate)) ? 'active' : ''}`}
@@ -145,7 +142,7 @@ export const BookingBox: React.FC<BookingBoxProps> = ({
                             setEndDate('');
                           }}
                         >
-                          <span className="label">ПРИБУТТЯ</span>
+                          <span className="label">ПОЧАТОК</span>
                           <div className="value-row">
                             <span className="value" style={{ color: startDate ? '#222' : '#717171' }}>
                               {startDate ? formatCalendarDate(startDate) : 'дд.мм.рррр'}
@@ -174,7 +171,7 @@ export const BookingBox: React.FC<BookingBoxProps> = ({
                             }
                           }}
                         >
-                          <span className="label">ВИЇЗД</span>
+                          <span className="label">КІНЕЦЬ</span>
                           <div className="value-row">
                             <span className="value" style={{ color: endDate ? '#222' : '#717171' }}>
                               {endDate ? formatCalendarDate(endDate) : 'дд.мм.рррр'}
@@ -246,7 +243,12 @@ export const BookingBox: React.FC<BookingBoxProps> = ({
           {bookingDetails && (
             <div className="booking-calculation">
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span>{selectedListing.price} грн x {bookingDetails.days} діб</span>
+                <span>{selectedListing.price} грн x {bookingDetails.days} {(() => {
+                  const n = bookingDetails.days;
+                  if (n % 10 === 1 && n % 100 !== 11) return 'ніч';
+                  if ([2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100)) return 'ночі';
+                  return 'ночей';
+                })()}</span>
                 <span>{bookingDetails.rentalPrice} грн</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>

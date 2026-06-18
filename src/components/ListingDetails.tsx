@@ -242,19 +242,6 @@ export const ListingDetails: React.FC<ListingDetailsProps> = ({
               </div>
             )}
             
-            {selectedListing.user?.ownerAvgRating !== undefined && selectedListing.user?.ownerAvgRating !== null && selectedListing.user.ownerAvgRating >= 4.5 && (
-              <div className="highlight-item">
-                <div className="highlight-icon">
-                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: '#10B981' }}>
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-                <div className="highlight-text">
-                  <h4>Досвідчений власник</h4>
-                  <p>Користувачі високо оцінюють роботу з цим орендодавцем (★ {selectedListing.user.ownerAvgRating}).</p>
-                </div>
-              </div>
-            )}
 
             <div className="highlight-item">
               <div className="highlight-icon">
@@ -334,7 +321,7 @@ export const ListingDetails: React.FC<ListingDetailsProps> = ({
           {selectedListing.latitude !== undefined && selectedListing.latitude !== null &&
            selectedListing.longitude !== undefined && selectedListing.longitude !== null && (
             <div className="map-section" style={{ padding: '24px 0', borderBottom: '1px solid #ebebeb' }}>
-              <h3 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '16px' }}>Де ви будете</h3>
+              <h3 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '16px' }}>Локація речі</h3>
               <p className="text-muted" style={{ marginBottom: '16px' }}>Локація: {selectedListing.location}</p>
               <div style={{ height: '350px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #ebebeb' }}>
                 <BrowseMap 

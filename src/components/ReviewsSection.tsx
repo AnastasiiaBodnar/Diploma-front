@@ -47,29 +47,6 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
         </span>
       </h3>
 
-      {/* Ratings Dashboard Progress Bars (only if reviews exist) */}
-      {selectedListing.reviews && selectedListing.reviews.length > 0 && (
-        <div className="reviews-dashboard">
-          {[
-            { label: 'Точність опису', score: (selectedListing.avgRating || 5.0) },
-            { label: 'Спілкування', score: selectedListing.avgRating ? Math.min(5.0, selectedListing.avgRating + 0.1) : 5.0 },
-            { label: 'Чистота речі', score: selectedListing.avgRating ? Math.max(4.0, selectedListing.avgRating - 0.1) : 5.0 },
-            { label: 'Зручність отримання', score: (selectedListing.avgRating || 5.0) },
-            { label: 'Розташування', score: 5.0 },
-            { label: 'Співвідношення ціна/якість', score: (selectedListing.avgRating || 5.0) }
-          ].map((item, idx) => (
-            <div key={idx} className="review-metric-row">
-              <span className="review-metric-label">{item.label}</span>
-              <div className="review-metric-progress-container">
-                <div className="metric-bar-bg">
-                  <div className="metric-bar-fill" style={{ width: `${(item.score / 5.0) * 100}%` }}></div>
-                </div>
-                <span className="review-metric-score">{item.score.toFixed(1)}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
 
       {/* Reviews list */}
       {selectedListing.reviews && selectedListing.reviews.length > 0 ? (
